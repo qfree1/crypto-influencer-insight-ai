@@ -7,6 +7,8 @@ import WalletConnection from '@/components/WalletConnection';
 import TokenGate from '@/components/TokenGate';
 import InfluencerForm from '@/components/InfluencerForm';
 import AnalysisReport from '@/components/AnalysisReport';
+import ReportHistory from '@/components/ReportHistory';
+import SubscriptionBanner from '@/components/SubscriptionBanner';
 import { Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -45,6 +47,12 @@ const Index = () => {
 
   const startNewAnalysis = () => {
     setAppState(AppState.INPUT_HANDLE);
+    setReport(null);
+  };
+  
+  const handleSelectHistoryReport = (historicalReport: RiskReport) => {
+    setReport(historicalReport);
+    setAppState(AppState.SHOW_REPORT);
   };
 
   // Update app state when wallet connects
@@ -99,11 +107,23 @@ const Index = () => {
         )}
         
         {appState === AppState.INPUT_HANDLE && (
-          <InfluencerForm 
-            web3State={web3State} 
-            onSubmit={handleInfluencerSubmit} 
-            setWeb3State={setWeb3State}
-          />
+          <>
+            <SubscriptionBanner web3State={web3State} />
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <InfluencerForm 
+                  web3State={web3State} 
+                  onSubmit={handleInfluencerSubmit} 
+                  setWeb3State={setWeb3State}
+                />
+              </div>
+              
+              <div className="md:col-span-1">
+                <ReportHistory onSelectReport={handleSelectHistoryReport} />
+              </div>
+            </div>
+          </>
         )}
         
         {appState === AppState.LOADING_REPORT && (

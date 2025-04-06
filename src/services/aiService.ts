@@ -212,6 +212,9 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
       description: "Risk report generated successfully",
     });
     
+    // Save report to history automatically
+    saveReportToHistory(reportData);
+    
     return reportData;
   } catch (error) {
     console.error('Error generating report:', error);
@@ -236,8 +239,19 @@ export const saveReportToHistory = (report: RiskReport): void => {
     const existingHistory = localStorage.getItem(historyKey);
     const history = existingHistory ? JSON.parse(existingHistory) : [];
     
-    // Add the new report to the beginning of the history array
-    history.unshift(report);
+    // Check if report already exists in history (to avoid duplicates)
+    const existingReportIndex = history.findIndex((r: RiskReport) => 
+      r.influencerData.handle.toLowerCase() === report.influencerData.handle.toLowerCase() &&
+      Math.abs(r.timestamp - report.timestamp) < 1000 // Same report if timestamps are very close
+    );
+    
+    if (existingReportIndex !== -1) {
+      // Replace existing report with updated one
+      history[existingReportIndex] = report;
+    } else {
+      // Add the new report to the beginning of the history array
+      history.unshift(report);
+    }
     
     // Keep only the 10 most recent reports
     const trimmedHistory = history.slice(0, 10);

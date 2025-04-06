@@ -5,7 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RiskReport } from '@/types';
 import RiskScore from './RiskScore';
-import ShareButtons from './ShareButtons';
+import EnhancedShareButtons from './EnhancedShareButtons';
+import BlockchainDetails from './BlockchainDetails';
 import { 
   Users, 
   BarChart, 
@@ -13,8 +14,13 @@ import {
   FileText, 
   Check, 
   X, 
-  TrendingDown 
+  TrendingDown,
+  Bookmark,
+  BookmarkPlus
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { saveReportToHistory } from '@/services/aiService';
 
 interface AnalysisReportProps {
   report: RiskReport;
@@ -23,6 +29,7 @@ interface AnalysisReportProps {
 
 const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const [isSaved, setIsSaved] = useState(false);
   
   const { 
     influencerData, 
@@ -44,6 +51,16 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
+    });
+  };
+  
+  // Save report to history
+  const handleSaveReport = () => {
+    saveReportToHistory(report);
+    setIsSaved(true);
+    toast({
+      title: "Report saved",
+      description: "This report has been saved to your history",
     });
   };
 
@@ -68,6 +85,28 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
               )}
               <div className="text-sm text-muted-foreground">
                 Analysis generated on {formatDate(report.timestamp)}
+              </div>
+              
+              <div className="flex items-center space-x-2 pt-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center space-x-1"
+                  onClick={handleSaveReport}
+                  disabled={isSaved}
+                >
+                  {isSaved ? (
+                    <>
+                      <Bookmark className="w-4 h-4" />
+                      <span>Saved</span>
+                    </>
+                  ) : (
+                    <>
+                      <BookmarkPlus className="w-4 h-4" />
+                      <span>Save Report</span>
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
             
@@ -136,7 +175,7 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
             </div>
           </Card>
           
-          <ShareButtons report={report} />
+          <EnhancedShareButtons report={report} />
         </TabsContent>
         
         {/* Metrics Tab */}
@@ -218,68 +257,7 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
         
         {/* Blockchain Tab */}
         <TabsContent value="blockchain" className="space-y-4">
-          <Card className="crypto-card">
-            <div className="p-6 space-y-6">
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold">Blockchain Activity</h3>
-                
-                {blockchainData.address && (
-                  <div className="bg-muted p-3 rounded-lg overflow-hidden">
-                    <div className="font-mono text-sm truncate">
-                      <span className="text-muted-foreground mr-2">Wallet:</span>
-                      {blockchainData.address}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <BlockchainMetric 
-                    label="Rug Pull Involvement" 
-                    value={blockchainData.rugPullCount.toString()}
-                    icon={<TrendingDown className="w-5 h-5 text-red-500" />}
-                    description="Number of confirmed rug pulls"
-                  />
-                  
-                  <BlockchainMetric 
-                    label="Dumping Behavior" 
-                    value={blockchainData.dumpingBehavior}
-                    icon={<X className="w-5 h-5 text-red-500" />}
-                    description="Frequency of selling after promotion"
-                  />
-                  
-                  <BlockchainMetric 
-                    label="MEV Activity" 
-                    value={blockchainData.mevActivity ? "Detected" : "None"}
-                    icon={<Coins className="w-5 h-5" />}
-                    description="Front-running and sandwich attacks"
-                  />
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold">Analysis of On-Chain Behavior</h3>
-                <p>
-                  {blockchainData.dumpingBehavior === 'high' && (
-                    "This influencer consistently sells tokens shortly after promotion, often before significant price drops. This pattern strongly suggests coordinated pump and dump activity."
-                  )}
-                  {blockchainData.dumpingBehavior === 'medium' && (
-                    "This influencer occasionally sells positions after promotion, but doesn't show a consistent pattern of immediate dumping. Some caution is warranted."
-                  )}
-                  {blockchainData.dumpingBehavior === 'low' && (
-                    "This influencer typically maintains positions in promoted tokens for extended periods, suggesting genuine belief in these projects."
-                  )}
-                </p>
-                
-                {blockchainData.mevActivity && (
-                  <p className="mt-4 text-amber-500">
-                    MEV (Maximal Extractable Value) activity detected from this wallet, indicating sophisticated front-running or sandwich attack behaviors.
-                  </p>
-                )}
-              </div>
-            </div>
-          </Card>
+          <BlockchainDetails data={blockchainData} />
         </TabsContent>
       </Tabs>
 
@@ -333,28 +311,5 @@ const StatusBadge = ({ status }: { status: 'rugpull' | 'active' | 'declined' }) 
     </span>
   );
 };
-
-const BlockchainMetric = ({ 
-  label, 
-  value, 
-  icon, 
-  description 
-}: { 
-  label: string, 
-  value: string, 
-  icon: React.ReactNode,
-  description: string
-}) => (
-  <div className="bg-muted p-4 rounded-lg space-y-2">
-    <div className="flex items-center space-x-2">
-      {icon}
-      <span className="font-medium">{label}</span>
-    </div>
-    <div className="text-xl font-bold capitalize">
-      {value}
-    </div>
-    <p className="text-xs text-muted-foreground">{description}</p>
-  </div>
-);
 
 export default AnalysisReport;
