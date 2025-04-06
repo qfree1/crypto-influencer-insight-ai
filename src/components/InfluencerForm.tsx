@@ -50,7 +50,7 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
           description: "You've used your one-time free analysis",
         });
       } else if (web3State.freeReportUsed) {
-        // Pay for report with 100 tokens
+        // Pay for report with 1 token
         const success = await payForReport(web3State.address || '');
         if (!success) {
           setError('Payment failed. Please try again.');
@@ -114,9 +114,9 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
             {!web3State.freeReportUsed ? (
               <span>You have 1 free analysis available</span>
             ) : web3State.hasTokens ? (
-              <span>Analysis cost: 100 WEB3D</span>
+              <span>Analysis cost: 1 $WEB3D</span>
             ) : (
-              <span className="text-destructive">Insufficient tokens. Need 100 WEB3D tokens for analysis</span>
+              <span className="text-destructive">Insufficient tokens. Need 1 $WEB3D token for analysis</span>
             )}
           </div>
 

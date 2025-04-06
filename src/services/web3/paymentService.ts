@@ -73,7 +73,7 @@ export const payForReport = async (address: string): Promise<boolean> => {
     
     toast({
       title: "Payment Successful",
-      description: `Paid ${REPORT_COST} WEB3D tokens for analysis`,
+      description: `Paid ${REPORT_COST} $WEB3D token for analysis`,
     });
     
     return true;
@@ -87,7 +87,7 @@ export const payForReport = async (address: string): Promise<boolean> => {
       
       toast({
         title: "Payment Successful",
-        description: `Paid ${REPORT_COST} WEB3D tokens for analysis`,
+        description: `Paid ${REPORT_COST} $WEB3D token for analysis`,
       });
       
       return true;

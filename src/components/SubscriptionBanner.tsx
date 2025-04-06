@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
+import { REQUIRED_TOKENS } from '@/services/web3Service';
 
 interface SubscriptionBannerProps {
   web3State: Web3State;
@@ -93,7 +94,7 @@ const SubscriptionBanner = ({ web3State, onClose }: SubscriptionBannerProps) => 
             </div>
             
             <p className="text-muted-foreground text-sm mb-3">
-              Get unlimited influencer reports by holding 1000 $WEB3D tokens in your wallet
+              Get unlimited influencer reports by holding {REQUIRED_TOKENS} $WEB3D tokens in your wallet
             </p>
             
             <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-3">

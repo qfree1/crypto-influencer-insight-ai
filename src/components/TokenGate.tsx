@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Shield, CheckCircle, XCircle, Coins } from 'lucide-react';
 import { Web3State } from '@/types';
+import { REQUIRED_TOKENS } from '@/services/web3Service';
 
 interface TokenGateProps {
   web3State: Web3State;
@@ -46,7 +47,7 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
           
           <div className="flex justify-between items-center p-3 rounded-lg bg-secondary">
             <span>Required Tokens:</span>
-            <span className="font-mono font-bold">1000</span>
+            <span className="font-mono font-bold">{REQUIRED_TOKENS} $WEB3D</span>
           </div>
           
           <div className="flex justify-between items-center p-3 rounded-lg bg-secondary">
@@ -62,7 +63,7 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
             <span>Cost Per Analysis:</span>
             <div className="flex items-center gap-1">
               <Coins className="text-primary w-4 h-4" />
-              <span className="font-mono font-bold">100 WEB3D</span>
+              <span className="font-mono font-bold">1 $WEB3D</span>
             </div>
           </div>
         </div>
@@ -82,8 +83,8 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
         {!web3State.hasTokens && (
           <p className="text-xs text-muted-foreground text-center">
             {web3State.freeReportUsed 
-              ? "You've used your free report. Each additional report costs 100 WEB3D tokens." 
-              : "You can use your one-time free report or acquire WEB3D tokens for unlimited access at 100 tokens per report."}
+              ? "You've used your free report. Each additional report costs 1 $WEB3D token." 
+              : "You can use your one-time free report or acquire WEB3D tokens for unlimited access at 1 $WEB3D token per report."}
           </p>
         )}
       </div>

@@ -13,7 +13,7 @@ export const formatTokenBalance = (balance: string): string => {
 export const WEB3D_TOKEN_ADDRESS = '0x7ed9054c48088bb8cfc5c5fbc32775b9455a13f7';
 export const WEB3D_TREASURY = '0xcaE2D679961bd3e7501E9a48a9f820521bE6d1eE';
 export const REQUIRED_TOKENS = 1000; // 1000 WEB3D tokens required
-export const REPORT_COST = 100; // 100 WEB3D tokens per additional report
+export const REPORT_COST = 1; // 1 WEB3D token per additional report
 
 // Token contract ABI (minimal)
 export const WEB3D_TOKEN_ABI = [
