@@ -35,8 +35,8 @@ const RiskScore = ({ score, size = 'md', showLabel = true }: RiskScoreProps) => 
   // Determine size classes
   const sizeClasses = {
     sm: {
-      container: 'w-24 h-24',
-      text: 'text-2xl',
+      container: 'w-10 h-10', // Slightly smaller to prevent overflow
+      text: 'text-xs font-bold',
       label: 'text-xs',
     },
     md: {
@@ -79,12 +79,12 @@ const RiskScore = ({ score, size = 'md', showLabel = true }: RiskScoreProps) => 
   }, [normalizedScore]);
 
   // Calculate stroke dash offset for circle animation
-  const radius = 40;
+  const radius = size === 'sm' ? 35 : 40; // Adjust radius for small size
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (animatedScore / 100) * circumference;
 
   return (
-    <div className={`relative ${sizeClasses[size].container} mx-auto`}>
+    <div className={`relative ${sizeClasses[size].container} mx-auto overflow-visible`}>
       {/* Background circle */}
       <svg className="w-full h-full" viewBox="0 0 100 100">
         <circle
@@ -114,10 +114,10 @@ const RiskScore = ({ score, size = 'md', showLabel = true }: RiskScoreProps) => 
       
       {/* Score and label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={`font-bold ${sizeClasses[size].text} ${getRiskColor(normalizedScore)}`}>
+        <span className={`${sizeClasses[size].text} ${getRiskColor(normalizedScore)}`}>
           {animatedScore}
         </span>
-        {showLabel && (
+        {showLabel && size !== 'sm' && (
           <span className={`${sizeClasses[size].label} text-muted-foreground`}>
             {getRiskLevel(normalizedScore)}
           </span>

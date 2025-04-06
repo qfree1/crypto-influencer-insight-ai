@@ -63,28 +63,28 @@ const ReportHistory = ({ onSelectReport }: ReportHistoryProps) => {
               onClick={() => onSelectReport(report)}
               style={{ transitionDelay: `${index * 50}ms` }}
             >
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 relative animate-pulse-subtle">
+              <div className="flex items-center space-x-3 flex-1 min-w-0">
+                <div className="w-10 h-10 relative flex-shrink-0 animate-pulse-subtle">
                   <RiskScore score={report.riskScore} size="sm" showLabel={false} />
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-background rounded-full flex items-center justify-center border border-white/10">
                     <Clock3 className="w-2.5 h-2.5 text-primary" />
                   </div>
                 </div>
-                <div>
-                  <div className="font-medium flex items-center">
-                    <span className="text-gradient">@{report.influencerData.handle}</span>
-                    {/* Recently added indicator */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium flex items-center gap-2 flex-wrap">
+                    <span className="text-gradient truncate max-w-full block">@{report.influencerData.handle}</span>
+                    {/* Recently added indicator as a separate element */}
                     {Date.now() - report.timestamp < 86400000 && (
-                      <span className="ml-2 text-xs bg-primary/20 text-primary rounded-full px-2 py-0.5 animate-pulse-subtle">New</span>
+                      <span className="text-xs bg-primary/20 text-primary rounded-full px-2 py-0.5 animate-pulse-subtle flex-shrink-0">New</span>
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {formatDate(report.timestamp)}
+                  <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                    <Clock className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{formatDate(report.timestamp)}</span>
                   </div>
                 </div>
               </div>
-              <div className="bg-primary/10 rounded-full p-1 group transition-all duration-300 hover:bg-primary/20">
+              <div className="bg-primary/10 rounded-full p-1 group transition-all duration-300 hover:bg-primary/20 flex-shrink-0 ml-2">
                 <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>

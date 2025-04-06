@@ -42,3 +42,18 @@
 .circle-glow {
   filter: drop-shadow(0 0 10px rgba(186, 12, 248, 0.5));
 }
+
+/* Text overflow handling - ensure proper truncation */
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Ensures flex items don't overflow their containers */
+.flex-item-truncate {
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
