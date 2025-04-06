@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, ExternalLink, CreditCard } from "lucide-react";
+import { User, LogOut, ExternalLink, CreditCard, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,10 +15,16 @@ import { toast } from "@/hooks/use-toast";
 interface WalletDisplayProps {
   walletAddress: string | null;
   tokenBalance: string;
+  isLoadingBalance?: boolean;
   handleDisconnect: () => void;
 }
 
-const WalletDisplay = ({ walletAddress, tokenBalance, handleDisconnect }: WalletDisplayProps) => {
+const WalletDisplay = ({ 
+  walletAddress, 
+  tokenBalance, 
+  isLoadingBalance = false, 
+  handleDisconnect 
+}: WalletDisplayProps) => {
   // Format wallet address for display
   const formatAddress = (address: string | null) => {
     if (!address) return "";
@@ -48,7 +54,14 @@ const WalletDisplay = ({ walletAddress, tokenBalance, handleDisconnect }: Wallet
           />
           <div className="flex flex-col">
             <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-            <span className="font-medium text-sm">{tokenBalance || "0.00"}</span>
+            {isLoadingBalance ? (
+              <div className="flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span className="text-sm">Loading...</span>
+              </div>
+            ) : (
+              <span className="font-medium text-sm">{tokenBalance || "0.00"}</span>
+            )}
           </div>
         </div>
       )}

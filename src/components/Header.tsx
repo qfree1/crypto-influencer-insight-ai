@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { getTokenBalance, clearBalanceCache } from "@/services/web3/balance";
 import { disconnectWallet } from "@/services/wallet/disconnect";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 // Import the components
 import Logo from "@/components/header/Logo";
@@ -22,6 +23,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [tokenBalance, setTokenBalance] = useState<string>("0.00");
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
 
   // Track scroll position for header styling
   useEffect(() => {
@@ -50,23 +52,39 @@ const Header = () => {
           if (accounts.length > 0) {
             const address = accounts[0];
             setWalletAddress(address);
-            // Add retry mechanism for initial balance fetch
-            let attempts = 0;
-            let balance = "0.00";
             
-            while (attempts < 3) {
-              balance = await getTokenBalance(address);
-              console.log(`Header balance attempt ${attempts + 1}:`, balance);
-              if (parseFloat(balance) > 0 || attempts === 2) break;
-              attempts++;
-              // Small delay between retries
-              await new Promise(resolve => setTimeout(resolve, 500));
+            // Set loading state
+            setIsLoadingBalance(true);
+            
+            try {
+              // Add retry mechanism for initial balance fetch
+              let attempts = 0;
+              let balance = "0.00";
+              
+              while (attempts < 3) {
+                balance = await getTokenBalance(address);
+                console.log(`Header balance attempt ${attempts + 1}:`, balance);
+                if (parseFloat(balance) > 0 || attempts === 2) break;
+                attempts++;
+                // Small delay between retries
+                await new Promise(resolve => setTimeout(resolve, 500));
+              }
+              
+              setTokenBalance(balance);
+            } catch (balanceError) {
+              console.error("Error fetching token balance:", balanceError);
+              toast({
+                title: "Balance Error",
+                description: "Could not retrieve your token balance",
+                variant: "destructive",
+              });
+            } finally {
+              setIsLoadingBalance(false);
             }
-            
-            setTokenBalance(balance);
           }
         } catch (error) {
           console.error("Error checking wallet connection:", error);
+          setIsLoadingBalance(false);
         }
       }
     };
@@ -80,26 +98,41 @@ const Header = () => {
           const address = accounts[0];
           setWalletAddress(address);
           
+          // Set loading state
+          setIsLoadingBalance(true);
+          
           // Clear cache to force fresh balance
-          clearBalanceCache(address);
+          clearBalanceCache();
           
-          // Add retry mechanism for balance fetch
-          let attempts = 0;
-          let balance = "0.00";
-          
-          while (attempts < 3) {
-            balance = await getTokenBalance(address);
-            console.log(`Account changed balance attempt ${attempts + 1}:`, balance);
-            if (parseFloat(balance) > 0 || attempts === 2) break;
-            attempts++;
-            // Small delay between retries
-            await new Promise(resolve => setTimeout(resolve, 500));
+          try {
+            // Add retry mechanism for balance fetch
+            let attempts = 0;
+            let balance = "0.00";
+            
+            while (attempts < 3) {
+              balance = await getTokenBalance(address);
+              console.log(`Account changed balance attempt ${attempts + 1}:`, balance);
+              if (parseFloat(balance) > 0 || attempts === 2) break;
+              attempts++;
+              // Small delay between retries
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            setTokenBalance(balance);
+          } catch (balanceError) {
+            console.error("Error fetching balance after account change:", balanceError);
+            toast({
+              title: "Balance Error",
+              description: "Could not retrieve your token balance",
+              variant: "destructive",
+            });
+          } finally {
+            setIsLoadingBalance(false);
           }
-          
-          setTokenBalance(balance);
         } else {
           setWalletAddress(null);
           setTokenBalance("0.00");
+          setIsLoadingBalance(false);
         }
       };
       
@@ -147,6 +180,7 @@ const Header = () => {
           <WalletDisplay 
             walletAddress={walletAddress} 
             tokenBalance={tokenBalance}
+            isLoadingBalance={isLoadingBalance}
             handleDisconnect={handleDisconnect}
           />
         </div>
@@ -170,6 +204,7 @@ const Header = () => {
           mobileMenuOpen={mobileMenuOpen}
           walletAddress={walletAddress}
           tokenBalance={tokenBalance}
+          isLoadingBalance={isLoadingBalance}
           handleDisconnect={handleDisconnect}
         />
       )}

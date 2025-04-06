@@ -2,13 +2,14 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileMenuProps {
   mobileMenuOpen: boolean;
   walletAddress: string | null;
   tokenBalance: string;
+  isLoadingBalance?: boolean;
   handleDisconnect: () => void;
 }
 
@@ -16,6 +17,7 @@ const MobileMenu = ({
   mobileMenuOpen,
   walletAddress,
   tokenBalance,
+  isLoadingBalance = false,
   handleDisconnect,
 }: MobileMenuProps) => {
   const navigate = useNavigate();
@@ -62,7 +64,14 @@ const MobileMenu = ({
             />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-              <span className="font-medium">{tokenBalance || "0.00"}</span>
+              {isLoadingBalance ? (
+                <div className="flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <span className="font-medium">{tokenBalance || "0.00"}</span>
+              )}
             </div>
           </div>
         )}
