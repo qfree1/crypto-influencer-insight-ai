@@ -6,7 +6,7 @@ import { generateReport } from '@/services/aiService';
 import WalletConnection from '@/components/WalletConnection';
 import TokenGate from '@/components/TokenGate';
 import InfluencerForm from '@/components/InfluencerForm';
-import AnalysisReport from '@/components/AnalysisReport';
+import AnalysisReport from '@/components/analysis-report/AnalysisReport';
 import ReportHistory from '@/components/ReportHistory';
 import SubscriptionBanner from '@/components/SubscriptionBanner';
 import Web3DBackgroundLogo from '@/components/Web3DBackgroundLogo';
