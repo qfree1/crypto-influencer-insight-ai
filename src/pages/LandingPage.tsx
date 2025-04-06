@@ -28,7 +28,7 @@ const LandingPage = () => {
             <div className="flex flex-col items-center md:items-start space-y-6">
               <div className="flex items-center gap-4">
                 <img 
-                  src="/lovable-uploads/4207036d-b43e-4c52-b710-684edb26b137.png" 
+                  src="/lovable-uploads/ce27c7ed-3e76-43e2-a2eb-3e44bea8d256.png" 
                   alt="Web3D Logo" 
                   className="w-16 h-16 md:w-20 md:h-20 circle-glow animate-pulse-subtle"
                 />

@@ -15,7 +15,7 @@ const Footer = () => {
           <div className="flex flex-col items-center md:items-start gap-4 max-w-xs">
             <div className="flex items-center gap-2">
               <img 
-                src="/lovable-uploads/4207036d-b43e-4c52-b710-684edb26b137.png" 
+                src="/lovable-uploads/ce27c7ed-3e76-43e2-a2eb-3e44bea8d256.png" 
                 alt="Web3D Logo" 
                 className="w-8 h-8 circle-glow" 
               />
@@ -60,7 +60,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            Copyright © {currentYear} Web3decision. All rights reserved.
+            Copyright © {currentYear} Web3Decision. All rights reserved.
           </p>
           <div className="flex gap-4">
             <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
