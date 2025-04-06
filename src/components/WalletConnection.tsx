@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { setupWalletListeners } from '@/services/walletService';
+import { setupWalletListeners, autoReconnectWallet } from '@/services/walletService';
 import { Card } from '@/components/ui/card';
-import { Wallet, AlertCircle, Shield, Check } from 'lucide-react';
+import { Wallet, AlertCircle, Shield, Check, Loader } from 'lucide-react';
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import WalletSelector from './WalletSelector';
@@ -14,19 +14,67 @@ interface WalletConnectionProps {
 
 const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isReconnecting, setIsReconnecting] = useState(true);
   const [showMetaMaskHelp, setShowMetaMaskHelp] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    // Check if any Web3 provider is installed
-    const hasWeb3Provider = !!window.ethereum;
-    setShowMetaMaskHelp(!hasWeb3Provider);
+    const initializeWallet = async () => {
+      // Check if any Web3 provider is installed
+      const hasWeb3Provider = !!window.ethereum;
+      setShowMetaMaskHelp(!hasWeb3Provider);
+      
+      // Try to reconnect wallet
+      try {
+        const reconnectedState = await autoReconnectWallet();
+        
+        if (reconnectedState.isConnected) {
+          setWeb3State(reconnectedState);
+          toast({
+            title: "Wallet Connected",
+            description: `Connected to ${reconnectedState.address?.substring(0, 6)}...${reconnectedState.address?.substring(38)}`,
+          });
+        }
+      } catch (error) {
+        console.error('Error during wallet initialization:', error);
+      } finally {
+        setIsReconnecting(false);
+      }
+      
+      // Set up listeners for account changes
+      setupWalletListeners((newState) => {
+        setWeb3State(prev => ({ ...prev, ...newState }));
+      });
+    };
     
-    // Set up listeners for account changes
-    setupWalletListeners((newState) => {
-      setWeb3State({ ...web3State, ...newState });
-    });
+    initializeWallet();
   }, []);
+
+  if (isReconnecting) {
+    return (
+      <Card className="crypto-card w-full max-w-md mx-auto relative overflow-hidden">
+        <div className="flex flex-col items-center p-6 space-y-6 relative z-10">
+          <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Logo" 
+              className="w-16 h-16 animate-pulse" 
+            />
+          </div>
+          
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold text-gradient">Reconnecting Wallet</h2>
+            <div className="flex items-center justify-center gap-2">
+              <Loader className="h-4 w-4 animate-spin" />
+              <p className="text-muted-foreground">
+                Checking for previously connected wallet...
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="crypto-card w-full max-w-md mx-auto relative overflow-hidden">

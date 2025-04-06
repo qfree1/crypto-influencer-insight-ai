@@ -4,14 +4,11 @@ import { toast } from '@/hooks/use-toast';
 import { 
   initialWeb3State,
   getTokenBalance,
-  setupWeb3Listeners 
+  setupWeb3Listeners, 
+  hasFreeReportUsed
 } from '@/services/web3Service';
 import { REQUIRED_TOKENS } from '@/services/web3/tokenUtils';
-import { 
-  saveWalletConnection, 
-  getSavedWalletConnection,
-  hasFreeReportUsed 
-} from '@/services/storageService';
+import { saveWalletConnection, getSavedWalletConnection } from '@/services/storageService';
 
 export enum WalletProvider {
   METAMASK = 'metamask',
@@ -121,24 +118,59 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
 
 // Auto-reconnect wallet from saved connection
 export const autoReconnectWallet = async (): Promise<Web3State> => {
-  const { address, provider } = getSavedWalletConnection();
-  
-  if (address && provider && window.ethereum) {
+  try {
+    if (!window.ethereum) {
+      console.log('No Ethereum provider found for auto-reconnect');
+      return initialWeb3State;
+    }
+    
+    const { address, provider } = getSavedWalletConnection();
+    
+    if (!address || !provider) {
+      console.log('No saved wallet connection found');
+      return initialWeb3State;
+    }
+    
+    // Check if the address is still in connected accounts without prompting user
     try {
-      // Check if the address is still in connected accounts
       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
       
       if (accounts.includes(address)) {
-        // If the address is available, reconnect using the saved provider
-        return await connectToWallet(provider as WalletProvider);
+        // Get chain ID
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        
+        // Get token balance
+        const tokenBalance = await getTokenBalance(address);
+        const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
+        
+        // Check free report usage
+        const freeReportUsed = hasFreeReportUsed(address);
+        
+        toast({
+          title: "Wallet Reconnected",
+          description: `Connected to ${address.substring(0, 6)}...${address.substring(38)}`,
+        });
+        
+        return {
+          isConnected: true,
+          address,
+          chainId: parseInt(chainId, 16),
+          hasTokens,
+          tokenBalance,
+          freeReportUsed,
+        };
+      } else {
+        console.log('Address not in connected accounts', accounts);
+        return initialWeb3State;
       }
     } catch (error) {
-      console.error('Auto-reconnect error:', error);
-      // Silent failure - will return initialWeb3State
+      console.error('Error checking accounts during auto-reconnect:', error);
+      return initialWeb3State;
     }
+  } catch (error) {
+    console.error('Auto-reconnect error:', error);
+    return initialWeb3State;
   }
-  
-  return initialWeb3State;
 };
 
 // Setup listeners for wallet events
