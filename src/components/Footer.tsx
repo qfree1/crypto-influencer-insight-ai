@@ -11,11 +11,9 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Logo and copyright */}
           <div className="flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-              alt="Web3D Logo" 
-              className="w-8 h-8 circle-glow" 
-            />
+            <div className="flex items-center justify-center w-8 h-8 bg-primary/20 rounded-full">
+              <span className="text-xs font-bold text-primary">W3D</span>
+            </div>
             <span className="text-sm text-muted-foreground">
               © {currentYear} Web3D
             </span>
@@ -55,11 +53,9 @@ const Footer = () => {
           
           {/* Token info */}
           <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-              alt="Web3D Token" 
-              className="w-5 h-5" 
-            />
+            <div className="flex items-center justify-center w-5 h-5 bg-primary/20 rounded-full">
+              <span className="text-[10px] font-bold text-primary">W3D</span>
+            </div>
             <a 
               href="https://bscscan.com/token/0x7ed9054c48088bb8cfc5c5fbc32775b9455a13f7"
               target="_blank"
