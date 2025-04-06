@@ -8,41 +8,35 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
 import ParticleBackground from "./components/ParticleBackground";
-import { useIsMobile } from "./hooks/use-mobile";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 // Create React Query client
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isMobile = useIsMobile();
-  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div className="min-h-screen bg-background relative overflow-hidden">
           <ParticleBackground />
           
-          {/* App Logo - visible on all pages */}
-          <div className="absolute top-4 left-4 z-50 flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/4207036d-b43e-4c52-b710-684edb26b137.png" 
-              alt="Web3D Logo" 
-              className="w-8 h-8 circle-glow logo-spin"
-            />
-            <span className={`font-bold text-gradient ${isMobile ? 'text-base' : 'text-lg'}`}>
-              Web3D Influencer Analysis
-            </span>
-          </div>
-          
-          <div className="glass-effect min-h-screen">
-            <Toaster />
-            <Sonner />
+          <div className="glass-effect min-h-screen flex flex-col">
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/analyze" element={<Index />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Header />
+              
+              {/* Main content with padding for fixed header */}
+              <main className="flex-grow pt-24">
+                <Toaster />
+                <Sonner />
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/analyze" element={<Index />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              
+              <Footer />
             </BrowserRouter>
           </div>
         </div>
