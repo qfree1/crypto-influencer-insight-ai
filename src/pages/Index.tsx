@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { AppState, RiskReport, Web3State } from '@/types';
 import { initialWeb3State, autoReconnectWallet } from '@/services/web3Service';
@@ -25,7 +24,6 @@ const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  // Auto-reconnect wallet on page load
   useEffect(() => {
     const reconnect = async () => {
       try {
@@ -61,7 +59,6 @@ const Index = () => {
       const reportData = await generateReport(handle);
       setReport(reportData);
       
-      // Save analysis to history
       if (reportData && web3State.address) {
         saveAnalysisToHistory({
           influencer: handle,
@@ -73,7 +70,6 @@ const Index = () => {
       setAppState(AppState.SHOW_REPORT);
     } catch (error) {
       console.error('Error generating report:', error);
-      // Return to form on error
       setAppState(AppState.INPUT_HANDLE);
     } finally {
       setIsLoading(false);
@@ -90,14 +86,12 @@ const Index = () => {
     setAppState(AppState.SHOW_REPORT);
   };
 
-  // Update app state when wallet connects
   useEffect(() => {
     if (web3State.isConnected && appState === AppState.CONNECT_WALLET) {
       handleWalletVerification();
     }
   }, [web3State.isConnected, appState]);
 
-  // Display loading indicator during auto-connect
   if (isAutoConnecting) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
@@ -120,11 +114,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Add the Web3D background logo */}
       <Web3DBackgroundLogo />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Web3D logo displayed at the top of the page */}
         <div className="flex justify-center mb-8">
           <img 
             src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 

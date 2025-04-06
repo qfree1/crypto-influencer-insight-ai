@@ -37,6 +37,7 @@ export interface BlockchainData {
 }
 
 export interface RiskReport {
+  id?: string; // Adding optional id property
   influencerData: InfluencerData;
   twitterMetrics: TwitterMetrics;
   blockchainData: BlockchainData;

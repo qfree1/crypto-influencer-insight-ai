@@ -126,6 +126,7 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     if (MOCK_INFLUENCERS[normalizedHandle]) {
       const mockData = MOCK_INFLUENCERS[normalizedHandle];
       reportData = {
+        id: `${normalizedHandle}-${Date.now()}`, // Add a unique ID for the report
         influencerData: {
           handle: mockData.handle,
           name: mockData.name,
@@ -147,6 +148,8 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
         title: "AI Analysis in Progress",
         description: "Generating risk report based on data...",
       });
+      
+      const reportId = `${handle.replace('@', '')}-${Date.now()}`;
       
       const influencerData: InfluencerData = {
         handle: handle.replace('@', ''),
@@ -195,6 +198,7 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
       }
       
       reportData = {
+        id: reportId, // Add a unique ID for the report
         influencerData,
         twitterMetrics,
         blockchainData,
