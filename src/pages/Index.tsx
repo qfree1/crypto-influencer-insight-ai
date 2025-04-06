@@ -9,6 +9,7 @@ import InfluencerForm from '@/components/InfluencerForm';
 import AnalysisReport from '@/components/AnalysisReport';
 import ReportHistory from '@/components/ReportHistory';
 import SubscriptionBanner from '@/components/SubscriptionBanner';
+import Web3DBackgroundLogo from '@/components/Web3DBackgroundLogo';
 import { Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -66,7 +67,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Add the Web3D background logo */}
+      <Web3DBackgroundLogo />
+      
       <div className="container mx-auto px-4 py-8">
+        {/* Web3D logo displayed at the top of the page */}
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Logo" 
+            className="w-16 h-16 circle-glow animate-pulse-subtle" 
+          />
+        </div>
+        
         {appState === AppState.CONNECT_WALLET && (
           <WalletConnection web3State={web3State} setWeb3State={setWeb3State} />
         )}

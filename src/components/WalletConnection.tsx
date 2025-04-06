@@ -38,11 +38,15 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
 
       <div className="flex flex-col items-center p-6 space-y-6 relative z-10">
         <div 
-          className={`w-20 h-20 rounded-full bg-muted flex items-center justify-center transition-all duration-500 ${isHovering ? 'scale-110 bg-crypto-gradient' : ''}`}
+          className={`w-24 h-24 rounded-full bg-muted flex items-center justify-center transition-all duration-500 ${isHovering ? 'scale-110 bg-crypto-gradient' : ''}`}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <Wallet className={`w-10 h-10 transition-all duration-500 ${isHovering ? 'text-white animate-pulse' : 'text-primary'}`} />
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Logo" 
+            className={`w-16 h-16 transition-all duration-500 ${isHovering ? 'animate-pulse scale-110' : ''}`} 
+          />
         </div>
         
         <div className="text-center space-y-2">
@@ -64,7 +68,11 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
           </div>
           
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-            <Wallet className="text-amber-500 w-5 h-5" />
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Token" 
+              className="w-5 h-5" 
+            />
             <div className="text-sm">One free analysis per wallet</div>
           </div>
         </div>

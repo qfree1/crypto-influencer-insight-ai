@@ -30,25 +30,25 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
   const wallets = [
     {
       name: 'MetaMask',
-      icon: '/lovable-uploads/9e4f0f9e-2c5c-4509-96dc-68fa870afafd.png',
+      icon: '/lovable-uploads/e4a27e02-846f-4189-896c-f5965a7beb2b.png',
       provider: WalletProvider.METAMASK,
       isMobileSupported: true
     },
     {
       name: 'Trust Wallet',
-      icon: '/lovable-uploads/a8f6bcb6-aa46-4332-a741-0fee1d4d6097.png',
+      icon: '/lovable-uploads/f32836e4-15db-4576-ac88-fabc3c8a4955.png',
       provider: WalletProvider.TRUST,
       isMobileSupported: true
     },
     {
       name: 'Binance Wallet',
-      icon: '/lovable-uploads/a83f960f-35dd-4e0e-b779-44b6f6e46516.png',
+      icon: '/lovable-uploads/86070191-68a4-4e80-a3b7-95c4098d7c09.png',
       provider: WalletProvider.BINANCE,
       isMobileSupported: true
     },
     {
       name: 'WalletConnect',
-      icon: '/lovable-uploads/50b52b08-3310-4b58-a091-e75bb6752f41.png',
+      icon: '/lovable-uploads/6c48c1df-59c1-4df0-9868-5642f153ff6a.png',
       provider: WalletProvider.WALLETCONNECT,
       isMobileSupported: true
     }
@@ -105,6 +105,14 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
           <DialogTitle className="text-center text-xl font-bold text-gradient">Connect Your Wallet</DialogTitle>
         </DialogHeader>
         
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Logo" 
+            className="w-16 h-16 circle-glow animate-pulse-subtle" 
+          />
+        </div>
+        
         <Tabs defaultValue="desktop" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="desktop" disabled={isMobile}>Desktop</TabsTrigger>
@@ -119,7 +127,7 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
                   className="p-4 flex flex-col items-center justify-center space-y-3 hover:border-primary/50 transition-all cursor-pointer bg-card/70 backdrop-blur-sm"
                   onClick={() => handleConnectWallet(wallet.provider)}
                 >
-                  <img src={wallet.icon} alt={wallet.name} className="w-12 h-12 object-contain" />
+                  <img src={wallet.icon} alt={wallet.name} className="w-20 h-20 object-contain" />
                   <p className="text-sm font-medium">{wallet.name}</p>
                 </Card>
               ))}
@@ -136,7 +144,7 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
                     className="p-4 flex flex-col items-center justify-center space-y-3 hover:border-primary/50 transition-all cursor-pointer bg-card/70 backdrop-blur-sm"
                     onClick={() => handleConnectWallet(wallet.provider)}
                   >
-                    <img src={wallet.icon} alt={wallet.name} className="w-12 h-12 object-contain" />
+                    <img src={wallet.icon} alt={wallet.name} className="w-20 h-20 object-contain" />
                     <p className="text-sm font-medium">{wallet.name}</p>
                   </Card>
                 ))
