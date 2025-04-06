@@ -5,7 +5,7 @@ import { payForReport } from './web3/paymentService';
 import { markFreeReportUsed, hasFreeReportUsed } from './web3/reportService';
 import { setupWeb3Listeners } from './web3/listenerService';
 import { formatTokenBalance, REQUIRED_TOKENS } from './web3/tokenUtils';
-import { autoReconnectWallet } from './walletService';
+import { autoReconnectWallet } from './wallet/reconnect';
 
 // Initial web3 state
 export const initialWeb3State: Web3State = {

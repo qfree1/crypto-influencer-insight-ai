@@ -5,10 +5,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { getTokenBalance, clearBalanceCache } from "@/services/web3/balanceService";
-import { disconnectWallet } from "@/services/walletService";
+import { disconnectWallet } from "@/services/wallet/disconnect";
 import { Button } from "@/components/ui/button";
 
-// Import the new components
+// Import the components
 import Logo from "@/components/header/Logo";
 import NavigationLinks from "@/components/header/NavigationLinks";
 import WalletDisplay from "@/components/header/WalletDisplay";
