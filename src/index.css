@@ -57,6 +57,22 @@
   }
 }
 
+/* Glass morphism effects */
+.glass-effect {
+  @apply backdrop-blur-lg bg-background/30 border border-white/10 shadow-xl;
+}
+
+.glass-card {
+  @apply glass-effect rounded-xl;
+  background-image: radial-gradient(circle at top right, rgba(109, 40, 217, 0.1), transparent 70%);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(109, 40, 217, 0.2);
+  border-color: rgba(109, 40, 217, 0.5);
+}
+
 .crypto-card {
   @apply bg-card rounded-xl border border-border p-6 shadow-lg backdrop-blur-sm;
   background-image: radial-gradient(circle at top right, rgba(109, 40, 217, 0.1), transparent 70%);
@@ -131,11 +147,6 @@
   transform: translateY(-5px);
 }
 
-/* Glass morphism effects */
-.glass-effect {
-  @apply backdrop-blur-sm bg-background/50 border border-white/10;
-}
-
 /* Progress bars */
 .progress-bar {
   @apply h-2 rounded-full overflow-hidden bg-secondary;
@@ -143,4 +154,42 @@
 
 .progress-bar-fill {
   @apply h-full bg-primary transition-all duration-1000 ease-out;
+}
+
+/* New animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce 3s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-rotate {
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(109, 40, 217, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(109, 40, 217, 0.6); }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(10px) translateY(-10px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+.animate-wave {
+  animation: wave 6s ease-in-out infinite;
 }

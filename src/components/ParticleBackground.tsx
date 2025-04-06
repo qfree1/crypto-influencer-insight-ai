@@ -31,17 +31,22 @@ const ParticleBackground = () => {
     
     const initParticles = () => {
       particles.current = [];
-      const particleCount = Math.min(Math.floor(window.innerWidth / 10), 100);
+      const particleCount = Math.min(Math.floor(window.innerWidth / 8), 150);
       
       for (let i = 0; i < particleCount; i++) {
-        const colors = ['rgba(30, 64, 175, 0.5)', 'rgba(109, 40, 217, 0.5)', 'rgba(6, 182, 212, 0.5)'];
+        const colors = [
+          'rgba(30, 64, 175, 0.4)', 
+          'rgba(109, 40, 217, 0.4)', 
+          'rgba(6, 182, 212, 0.4)',
+          'rgba(219, 39, 119, 0.3)'
+        ];
         
         particles.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 3 + 1,
-          speedX: (Math.random() - 0.5) * 0.5,
-          speedY: (Math.random() - 0.5) * 0.5,
+          size: Math.random() * 4 + 1,
+          speedX: (Math.random() - 0.5) * 0.4,
+          speedY: (Math.random() - 0.5) * 0.4,
           color: colors[Math.floor(Math.random() * colors.length)],
           opacity: Math.random() * 0.5 + 0.1,
         });
@@ -74,8 +79,8 @@ const ParticleBackground = () => {
       });
       
       // Draw connections
-      ctx.globalAlpha = 0.1;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.globalAlpha = 0.15;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.lineWidth = 0.5;
       
       for (let i = 0; i < particles.current.length; i++) {
@@ -84,7 +89,7 @@ const ParticleBackground = () => {
           const dy = particles.current[i].y - particles.current[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          if (distance < 100) {
+          if (distance < 120) {
             ctx.beginPath();
             ctx.moveTo(particles.current[i].x, particles.current[i].y);
             ctx.lineTo(particles.current[j].x, particles.current[j].y);
@@ -112,7 +117,7 @@ const ParticleBackground = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 z-[-1] pointer-events-none opacity-30"
+      className="fixed inset-0 z-[-1] pointer-events-none opacity-40"
     />
   );
 };
