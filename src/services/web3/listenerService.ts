@@ -1,6 +1,6 @@
 
 import { Web3State } from '@/types';
-import { getTokenBalance } from './balance';
+import { getTokenBalance } from './balanceService';
 import { hasFreeReportUsed } from './reportService';
 import { REQUIRED_TOKENS } from './tokenUtils';
 import { initialWeb3State } from '../web3Service';

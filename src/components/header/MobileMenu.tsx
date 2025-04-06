@@ -53,19 +53,17 @@ const MobileMenu = ({
         </Button>
         
         {/* Mobile Web3D Balance Display */}
-        {walletAddress && (
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-background/80 border border-primary/30">
-            <img 
-              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-              alt="Web3D Token" 
-              className="h-5 w-5" 
-            />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-              <span className="font-medium">{tokenBalance || "0.00"}</span>
-            </div>
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-background/80 border border-primary/30">
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Token" 
+            className="h-5 w-5" 
+          />
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">WEB3D Balance</span>
+            <span className="font-medium">{tokenBalance}</span>
           </div>
-        )}
+        </div>
 
         {/* Mobile Wallet Options */}
         {walletAddress ? (

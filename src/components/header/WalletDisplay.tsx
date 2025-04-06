@@ -39,19 +39,17 @@ const WalletDisplay = ({ walletAddress, tokenBalance, handleDisconnect }: Wallet
   return (
     <div className="flex items-center space-x-6">
       {/* Web3D Balance Display */}
-      {walletAddress && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/80 border border-primary/30 backdrop-blur-sm">
-          <img 
-            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-            alt="Web3D Token" 
-            className="h-5 w-5" 
-          />
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-            <span className="font-medium text-sm">{tokenBalance || "0.00"}</span>
-          </div>
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/80 border border-primary/30 backdrop-blur-sm">
+        <img 
+          src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+          alt="Web3D Token" 
+          className="h-5 w-5" 
+        />
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground">WEB3D Balance</span>
+          <span className="font-medium text-sm">{tokenBalance}</span>
         </div>
-      )}
+      </div>
 
       {/* User Menu (when wallet is connected) */}
       {walletAddress && (

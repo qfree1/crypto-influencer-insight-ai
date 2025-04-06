@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wallet, AlertCircle, ExternalLink } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { WalletProvider, connectToWallet, getAvailableWalletProviders } from '@/services/wallet';
+import { WalletProvider, connectToWallet } from '@/services/walletService';
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -26,7 +27,32 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   
-  const wallets = getAvailableWalletProviders();
+  const wallets = [
+    {
+      name: 'MetaMask',
+      icon: '/lovable-uploads/e4a27e02-846f-4189-896c-f5965a7beb2b.png',
+      provider: WalletProvider.METAMASK,
+      isMobileSupported: true
+    },
+    {
+      name: 'Trust Wallet',
+      icon: '/lovable-uploads/f32836e4-15db-4576-ac88-fabc3c8a4955.png',
+      provider: WalletProvider.TRUST,
+      isMobileSupported: true
+    },
+    {
+      name: 'Binance Wallet',
+      icon: '/lovable-uploads/86070191-68a4-4e80-a3b7-95c4098d7c09.png',
+      provider: WalletProvider.BINANCE,
+      isMobileSupported: true
+    },
+    {
+      name: 'WalletConnect',
+      icon: '/lovable-uploads/6c48c1df-59c1-4df0-9868-5642f153ff6a.png',
+      provider: WalletProvider.WALLETCONNECT,
+      isMobileSupported: true
+    }
+  ];
 
   const handleConnectWallet = async (provider: WalletProvider) => {
     setIsConnecting(true);
