@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,16 +29,13 @@ const SubscriptionBanner = ({ web3State, onClose }: SubscriptionBannerProps) => 
       if (onClose) onClose();
     }, 500);
     
-    // Store in local storage to remember user preference
     localStorage.setItem('subscription_banner_closed', 'true');
   };
   
   useEffect(() => {
-    // Check if user previously dismissed the banner
     const isClosed = localStorage.getItem('subscription_banner_closed') === 'true';
     setShowBanner(!isClosed);
     
-    // Trigger entrance animation
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 100);
@@ -52,7 +48,6 @@ const SubscriptionBanner = ({ web3State, onClose }: SubscriptionBannerProps) => 
   return (
     <Card className={`relative overflow-hidden border-primary/20 mb-6 transition-all duration-500 transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
       <div className="absolute inset-0 bg-gradient-to-r from-crypto-blue/10 to-crypto-purple/10">
-        {/* Animated particles */}
         {[...Array(5)].map((_, i) => (
           <div 
             key={i}
@@ -94,7 +89,7 @@ const SubscriptionBanner = ({ web3State, onClose }: SubscriptionBannerProps) => 
             </div>
             
             <p className="text-muted-foreground text-sm mb-3">
-              Get unlimited influencer reports by holding {REQUIRED_TOKENS} $WEB3D tokens in your wallet
+              Get unlimited influencer reports by holding {REQUIRED_TOKENS} $WEB3D token in your wallet
             </p>
             
             <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-3">
