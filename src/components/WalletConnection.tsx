@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { setupWalletListeners, autoReconnectWallet } from '@/services/walletService';
+import { setupWeb3Listeners, autoReconnectWallet } from '@/services/web3Service';
 import { Card } from '@/components/ui/card';
 import { Wallet, AlertCircle, Shield, Check, Loader } from 'lucide-react';
 import { Web3State } from '@/types';
@@ -42,8 +42,10 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
       }
       
       // Set up listeners for account changes
-      setupWalletListeners((newState) => {
-        setWeb3State(prev => ({ ...prev, ...newState }));
+      setupWeb3Listeners((newState) => {
+        // Create a new state object by merging the current state with the updates
+        const updatedState = { ...web3State, ...newState };
+        setWeb3State(updatedState);
       });
     };
     
@@ -171,3 +173,4 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
 };
 
 export default WalletConnection;
+
