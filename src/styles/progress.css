@@ -1,0 +1,9 @@
+
+/* Progress bars */
+.progress-bar {
+  @apply h-2 rounded-full overflow-hidden bg-secondary;
+}
+
+.progress-bar-fill {
+  @apply h-full bg-primary transition-all duration-1000 ease-out;
+}
