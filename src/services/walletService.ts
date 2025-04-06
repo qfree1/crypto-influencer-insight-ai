@@ -1,9 +1,13 @@
 
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
-import { initialWeb3State } from '@/services/web3Service';
-import { getTokenBalance } from '@/services/web3/balanceService';
-import { hasFreeReportUsed } from '@/services/web3/reportService';
+import { 
+  initialWeb3State,
+  getTokenBalance,
+  hasFreeReportUsed,
+  setupWeb3Listeners 
+} from '@/services/web3Service';
+import { REQUIRED_TOKENS } from '@/services/web3/tokenUtils';
 
 export enum WalletProvider {
   METAMASK = 'metamask',
@@ -82,9 +86,9 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
 
     const address = accounts[0];
 
-    // Get token balance (using simulated data for demo)
+    // Get token balance
     const tokenBalance = await getTokenBalance(address);
-    const hasTokens = parseFloat(tokenBalance) >= 1000; // Require 1000 tokens
+    const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
 
     // Check if the user has used their free report
     const freeReportUsed = hasFreeReportUsed(address);
@@ -108,55 +112,5 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
   }
 };
 
-// Setup listeners for wallet events
-export const setupWalletListeners = (callback: (newState: Partial<Web3State>) => void): void => {
-  if (!window.ethereum) return;
-
-  window.ethereum.on('accountsChanged', async (accounts: string[]) => {
-    if (accounts.length === 0) {
-      callback(initialWeb3State);
-      toast({
-        title: "Wallet Disconnected",
-        description: "Your wallet has been disconnected",
-      });
-    } else {
-      const address = accounts[0];
-      const tokenBalance = await getTokenBalance(address);
-      const hasTokens = parseFloat(tokenBalance) >= 1000;
-      const freeReportUsed = hasFreeReportUsed(address);
-      
-      callback({
-        isConnected: true,
-        address,
-        hasTokens,
-        tokenBalance,
-        freeReportUsed,
-      });
-      
-      toast({
-        title: "Account Changed",
-        description: `Connected to ${address.substring(0, 6)}...${address.substring(38)}`,
-      });
-    }
-  });
-
-  window.ethereum.on('chainChanged', (chainId: string) => {
-    const numericChainId = parseInt(chainId, 16);
-    callback({ chainId: numericChainId });
-    
-    toast({
-      title: "Network Changed",
-      description: `Connected to chain ID: ${numericChainId}`,
-    });
-  });
-
-  window.ethereum.on('disconnect', () => {
-    callback(initialWeb3State);
-    
-    toast({
-      title: "Wallet Disconnected",
-      description: "Your wallet has been disconnected",
-      variant: "destructive",
-    });
-  });
-};
+// Setup listeners for wallet events - now just use the function from web3Service
+export const setupWalletListeners = setupWeb3Listeners;

@@ -23,5 +23,6 @@ export {
   payForReport,
   markFreeReportUsed,
   hasFreeReportUsed,
-  setupWeb3Listeners
+  setupWeb3Listeners,
+  REQUIRED_TOKENS
 };
