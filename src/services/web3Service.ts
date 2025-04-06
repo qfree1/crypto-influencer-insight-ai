@@ -1,6 +1,6 @@
 
 import { Web3State } from '@/types';
-import { getTokenBalance } from './web3/balanceService';
+import { getTokenBalance } from './web3/balance';
 import { payForReport } from './web3/paymentService';
 import { markFreeReportUsed, hasFreeReportUsed } from './web3/reportService';
 import { setupWeb3Listeners } from './web3/listenerService';

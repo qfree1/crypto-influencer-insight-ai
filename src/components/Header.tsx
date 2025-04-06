@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
-import { getTokenBalance, clearBalanceCache } from "@/services/web3/balanceService";
+import { getTokenBalance, clearBalanceCache } from "@/services/web3/balance";
 import { disconnectWallet } from "@/services/wallet/disconnect";
 import { Button } from "@/components/ui/button";
 
