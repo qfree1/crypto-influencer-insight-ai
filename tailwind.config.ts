@@ -63,13 +63,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				crypto: {
-					blue: '#1E40AF',
-					purple: '#6D28D9',
-					cyan: '#06B6D4',
-					magenta: '#DB2777',
-					dark: '#111827',
-					light: '#F3F4F6'
+				brand: {
+					purple: '#6a11cb',
+					magenta: '#d442ef',
+					primary: '#ba0cf8',
+                    secondary: '#6a11cb'
 				}
 			},
 			borderRadius: {
@@ -149,8 +147,8 @@ export default {
         'bounce-small': 'bounce-small 2s ease-in-out infinite'
 			},
 			backgroundImage: {
-				'crypto-gradient': 'linear-gradient(135deg, #1E40AF 0%, #6D28D9 100%)',
-				'neon-glow': 'radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, rgba(219, 39, 119, 0.1) 100%)'
+				'crypto-gradient': 'linear-gradient(135deg, #6a11cb 0%, #d442ef 100%)',
+				'neon-glow': 'radial-gradient(circle, rgba(186, 12, 248, 0.2) 0%, rgba(106, 17, 203, 0.1) 100%)'
 			}
 		}
 	},

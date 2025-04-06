@@ -35,10 +35,10 @@ const ParticleBackground = () => {
       
       for (let i = 0; i < particleCount; i++) {
         const colors = [
-          'rgba(30, 64, 175, 0.4)', 
-          'rgba(109, 40, 217, 0.4)', 
-          'rgba(6, 182, 212, 0.4)',
-          'rgba(219, 39, 119, 0.3)'
+          'rgba(106, 17, 203, 0.5)', // Brand purple
+          'rgba(186, 12, 248, 0.5)', // Brand magenta
+          'rgba(212, 66, 239, 0.4)', // Brand lighter magenta
+          'rgba(186, 12, 248, 0.3)' // Brand magenta with less opacity
         ];
         
         particles.current.push({
@@ -80,7 +80,7 @@ const ParticleBackground = () => {
       
       // Draw connections
       ctx.globalAlpha = 0.15;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.strokeStyle = 'rgba(186, 12, 248, 0.3)'; // Brand color for connections
       ctx.lineWidth = 0.5;
       
       for (let i = 0; i < particles.current.length; i++) {
