@@ -1,21 +1,18 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { Menu, X, CreditCard, User, LogOut, ExternalLink } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { getTokenBalance } from "@/services/web3Service";
 import { disconnectWallet } from "@/services/walletService";
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+
+// Import the new components
+import Logo from "@/components/header/Logo";
+import NavigationLinks from "@/components/header/NavigationLinks";
+import WalletDisplay from "@/components/header/WalletDisplay";
+import MobileMenu from "@/components/header/MobileMenu";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -89,23 +86,6 @@ const Header = () => {
     }
   };
 
-  // Format wallet address for display
-  const formatAddress = (address: string | null) => {
-    if (!address) return "";
-    return `${address.substring(0, 6)}...${address.substring(38)}`;
-  };
-
-  // Copy address to clipboard
-  const copyAddressToClipboard = () => {
-    if (walletAddress) {
-      navigator.clipboard.writeText(walletAddress);
-      toast({
-        title: "Address Copied",
-        description: "Wallet address copied to clipboard",
-      });
-    }
-  };
-
   return (
     <header 
       className={cn(
@@ -114,97 +94,17 @@ const Header = () => {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo and title */}
-        <div 
-          className="flex items-center gap-3 cursor-pointer" 
-          onClick={() => navigate("/")}
-        >
-          <div className="relative">
-            <img 
-              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-              alt="Web3D Logo" 
-              className={cn(
-                "w-12 h-12 circle-glow logo-spin",
-                scrolled ? "scale-90" : "scale-100"
-              )}
-            />
-            {!scrolled && (
-              <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl -z-10 opacity-70 animate-pulse-subtle"></div>
-            )}
-          </div>
-          
-          <h1 className={cn(
-            "font-bold text-gradient transition-all duration-300",
-            scrolled ? "text-lg" : "text-xl"
-          )}>
-            Web3D Influencer Analysis
-          </h1>
-        </div>
+        {/* Logo component */}
+        <Logo scrolled={scrolled} />
 
-        {/* Navigation Links, User Menu and Balance Display */}
+        {/* Navigation Links and Wallet Display for desktop */}
         <div className="hidden md:flex items-center space-x-6">
-          <Button 
-            variant="link" 
-            className={cn(
-              "text-foreground/80 hover:text-foreground hover:bg-transparent px-0",
-              location.pathname === "/" && "text-primary font-medium"
-            )}
-            onClick={() => navigate("/")}
-          >
-            Home
-          </Button>
-          <Button 
-            variant="link" 
-            className={cn(
-              "text-foreground/80 hover:text-foreground hover:bg-transparent px-0",
-              location.pathname === "/analyze" && "text-primary font-medium"
-            )}
-            onClick={() => navigate("/analyze")}
-          >
-            Analyze
-          </Button>
-
-          {/* Web3D Balance Display */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/80 border border-primary/30 backdrop-blur-sm">
-            <img 
-              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-              alt="Web3D Token" 
-              className="h-5 w-5" 
-            />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-              <span className="font-medium text-sm">{tokenBalance}</span>
-            </div>
-          </div>
-
-          {/* User Menu (when wallet is connected) */}
-          {walletAddress && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 border-primary/30">
-                  <User className="h-4 w-4" />
-                  <span className="font-mono">{formatAddress(walletAddress)}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Wallet</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={copyAddressToClipboard}>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  <span>Copy Wallet Address</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.open(`https://bscscan.com/address/${walletAddress}`, '_blank')}>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  <span>View on Explorer</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleDisconnect} className="text-destructive focus:text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Disconnect</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <NavigationLinks />
+          <WalletDisplay 
+            walletAddress={walletAddress} 
+            tokenBalance={tokenBalance}
+            handleDisconnect={handleDisconnect}
+          />
         </div>
 
         {/* Mobile menu button */}
@@ -220,64 +120,14 @@ const Header = () => {
         )}
       </div>
 
-      {/* Mobile menu */}
-      {isMobile && mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-lg border-b border-border/40 p-4 animate-fade-in">
-          <div className="flex flex-col space-y-4">
-            <Button 
-              variant="ghost" 
-              className={cn(
-                "justify-start",
-                location.pathname === "/" && "bg-muted"
-              )}
-              onClick={() => navigate("/")}
-            >
-              Home
-            </Button>
-            <Button 
-              variant="ghost" 
-              className={cn(
-                "justify-start",
-                location.pathname === "/analyze" && "bg-muted"
-              )}
-              onClick={() => navigate("/analyze")}
-            >
-              Analyze
-            </Button>
-            
-            {/* Mobile Web3D Balance Display */}
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-background/80 border border-primary/30">
-              <img 
-                src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
-                alt="Web3D Token" 
-                className="h-5 w-5" 
-              />
-              <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-                <span className="font-medium">{tokenBalance}</span>
-              </div>
-            </div>
-
-            {/* Mobile Wallet Options */}
-            {walletAddress ? (
-              <>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/80 border border-primary/30">
-                  <span className="text-xs text-muted-foreground">Wallet</span>
-                  <span className="font-mono text-sm">{formatAddress(walletAddress)}</span>
-                </div>
-                
-                <Button
-                  variant="outline"
-                  className="justify-start border-destructive/30 text-destructive"
-                  onClick={handleDisconnect}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Disconnect Wallet
-                </Button>
-              </>
-            ) : null}
-          </div>
-        </div>
+      {/* Mobile menu component */}
+      {isMobile && (
+        <MobileMenu
+          mobileMenuOpen={mobileMenuOpen}
+          walletAddress={walletAddress}
+          tokenBalance={tokenBalance}
+          handleDisconnect={handleDisconnect}
+        />
       )}
     </header>
   );
