@@ -4,11 +4,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
-import { getTokenBalance } from "@/services/web3Service";
-import { disconnectWallet } from "@/services/walletService";
+import { getTokenBalance, clearBalanceCache } from "@/services/web3/balance";
+import { disconnectWallet } from "@/services/wallet/disconnect";
 import { Button } from "@/components/ui/button";
 
-// Import the new components
+// Import the components
 import Logo from "@/components/header/Logo";
 import NavigationLinks from "@/components/header/NavigationLinks";
 import WalletDisplay from "@/components/header/WalletDisplay";
@@ -43,11 +43,26 @@ const Header = () => {
     const checkWalletConnection = async () => {
       if (window.ethereum) {
         try {
+          // Force clear cache to ensure fresh balance
+          clearBalanceCache();
+          
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
           if (accounts.length > 0) {
             const address = accounts[0];
             setWalletAddress(address);
-            const balance = await getTokenBalance(address);
+            // Add retry mechanism for initial balance fetch
+            let attempts = 0;
+            let balance = "0.00";
+            
+            while (attempts < 3) {
+              balance = await getTokenBalance(address);
+              console.log(`Header balance attempt ${attempts + 1}:`, balance);
+              if (parseFloat(balance) > 0 || attempts === 2) break;
+              attempts++;
+              // Small delay between retries
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
             setTokenBalance(balance);
           }
         } catch (error) {
@@ -60,17 +75,46 @@ const Header = () => {
 
     // Setup listener for account changes
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', async (accounts: string[]) => {
+      const handleAccountsChanged = async (accounts: string[]) => {
         if (accounts.length > 0) {
           const address = accounts[0];
           setWalletAddress(address);
-          const balance = await getTokenBalance(address);
+          
+          // Clear cache to force fresh balance
+          clearBalanceCache(address);
+          
+          // Add retry mechanism for balance fetch
+          let attempts = 0;
+          let balance = "0.00";
+          
+          while (attempts < 3) {
+            balance = await getTokenBalance(address);
+            console.log(`Account changed balance attempt ${attempts + 1}:`, balance);
+            if (parseFloat(balance) > 0 || attempts === 2) break;
+            attempts++;
+            // Small delay between retries
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          
           setTokenBalance(balance);
         } else {
           setWalletAddress(null);
           setTokenBalance("0.00");
         }
-      });
+      };
+      
+      // Remove existing listeners to prevent duplicates
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      
+      // Add fresh listener
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      
+      // Cleanup function
+      return () => {
+        if (window.ethereum) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        }
+      };
     }
   }, []);
 
