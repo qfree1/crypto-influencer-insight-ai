@@ -71,11 +71,15 @@ const Index = () => {
             onClick={() => navigate('/')}
           >
             <div className="w-10 h-10 rounded-lg bg-crypto-gradient flex items-center justify-center">
-              <span className="text-white font-bold">CI</span>
+              <img 
+                src="/lovable-uploads/4207036d-b43e-4c52-b710-684edb26b137.png" 
+                alt="Web3D Logo" 
+                className="w-8 h-8 circle-glow"
+              />
             </div>
             <div>
-              <h1 className="font-bold text-xl">Crypto Influencer Insight AI</h1>
-              <p className="text-xs text-muted-foreground">AI-powered influencer risk analysis</p>
+              <h1 className="font-bold text-xl text-gradient">Web3D Influencer Analysis</h1>
+              <p className="text-xs text-muted-foreground">AI-powered blockchain risk analysis</p>
             </div>
           </div>
           
@@ -140,8 +144,7 @@ const Index = () => {
 
       <footer className="border-t border-border py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Crypto Influencer Insight AI &copy; 2025 - AI-powered analysis of crypto influencer credibility</p>
-          <p className="mt-1">This is a demo application. Always do your own research (DYOR) before making investment decisions.</p>
+          <p>Web3Decision &copy; 2025</p>
         </div>
       </footer>
     </div>

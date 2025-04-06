@@ -24,7 +24,7 @@ const App = () => (
             alt="Web3D Logo" 
             className="w-8 h-8 circle-glow logo-spin"
           />
-          <span className="font-bold text-gradient text-lg">Web3D</span>
+          <span className="font-bold text-gradient text-lg">Web3D Influencer Analysis</span>
         </div>
         
         <div className="glass-effect min-h-screen">

@@ -52,7 +52,7 @@ const LandingPage = () => {
                   className="bg-crypto-gradient text-lg group relative overflow-hidden w-full py-6"
                 >
                   <span className="relative z-10 flex items-center">
-                    Connect Wallet
+                    Start Analysis
                     <Wallet className="ml-2 w-5 h-5" />
                   </span>
                   <span className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
@@ -100,6 +100,11 @@ const LandingPage = () => {
               description="Get a comprehensive risk score for any crypto influencer based on their past performance."
             />
           </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-white/10 text-center">
+          <p className="text-sm text-muted-foreground">Web3Decision &copy; 2025</p>
         </div>
       </div>
     </div>
