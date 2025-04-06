@@ -44,6 +44,12 @@ export const initialWeb3State: Web3State = {
   freeReportUsed: false,
 };
 
+// Format token balance to 2 decimal places
+export const formatTokenBalance = (balance: string): string => {
+  const numericBalance = parseFloat(balance);
+  return numericBalance.toFixed(2);
+};
+
 // Fetch token balance using BSCScan API when Web3 provider is not available
 const fetchTokenBalanceFromAPI = async (address: string): Promise<string> => {
   try {
@@ -55,20 +61,20 @@ const fetchTokenBalanceFromAPI = async (address: string): Promise<string> => {
     if (data.status === '1') {
       // Convert balance from wei to token units (assuming 18 decimals)
       const formattedBalance = ethers.formatUnits(data.result, 18);
-      return formattedBalance;
+      return formatTokenBalance(formattedBalance);
     }
     
     console.error('Error from BSCScan API:', data.message);
-    return '0';
+    return '0.00';
   } catch (error) {
     console.error('Error fetching token balance from BSCScan API:', error);
-    return '0';
+    return '0.00';
   }
 };
 
 // Get token balance from contract
 export const getTokenBalance = async (address: string): Promise<string> => {
-  if (!address) return '0';
+  if (!address) return '0.00';
   
   try {
     // Try to use Web3 provider if available
@@ -93,7 +99,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
       // Convert balance from wei to token units (assuming 18 decimals)
       const formattedBalance = ethers.formatUnits(balance, 18);
       
-      return formattedBalance;
+      return formatTokenBalance(formattedBalance);
     } else {
       // Fallback to BSCScan API if no Web3 provider is available
       return await fetchTokenBalanceFromAPI(address);
@@ -110,10 +116,10 @@ export const getTokenBalance = async (address: string): Promise<string> => {
       // Fallback to simulated balance for development
       if (process.env.NODE_ENV === 'development') {
         console.warn('Using simulated balance for development');
-        return (Math.floor(Math.random() * 2000) + 1).toString();
+        return formatTokenBalance((Math.floor(Math.random() * 2000) + 1).toString());
       }
       
-      return '0';
+      return '0.00';
     }
   }
 };

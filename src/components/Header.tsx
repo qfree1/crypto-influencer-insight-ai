@@ -14,7 +14,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [tokenBalance, setTokenBalance] = useState<string>("0");
+  const [tokenBalance, setTokenBalance] = useState<string>("0.00");
 
   // Track scroll position for header styling
   useEffect(() => {
@@ -61,7 +61,7 @@ const Header = () => {
           setTokenBalance(balance);
         } else {
           setWalletAddress(null);
-          setTokenBalance("0");
+          setTokenBalance("0.00");
         }
       });
     }
