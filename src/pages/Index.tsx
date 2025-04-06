@@ -8,12 +8,15 @@ import TokenGate from '@/components/TokenGate';
 import InfluencerForm from '@/components/InfluencerForm';
 import AnalysisReport from '@/components/AnalysisReport';
 import { Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECT_WALLET);
   const [web3State, setWeb3State] = useState<Web3State>(initialWeb3State);
   const [report, setReport] = useState<RiskReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleWalletVerification = () => {
     setAppState(AppState.VERIFY_TOKENS);
@@ -55,7 +58,10 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
+          <div 
+            className="flex items-center space-x-2 cursor-pointer" 
+            onClick={() => navigate('/')}
+          >
             <div className="w-10 h-10 rounded-lg bg-crypto-gradient flex items-center justify-center">
               <span className="text-white font-bold">CI</span>
             </div>
@@ -65,13 +71,20 @@ const Index = () => {
             </div>
           </div>
           
-          {web3State.isConnected && (
+          {web3State.isConnected ? (
             <div className="flex items-center space-x-1 bg-muted px-3 py-1 rounded-full text-sm">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
               <span className="font-mono">
                 {web3State.address?.substring(0, 6)}...{web3State.address?.substring(38)}
               </span>
             </div>
+          ) : (
+            <Button 
+              onClick={() => setAppState(AppState.CONNECT_WALLET)} 
+              className="bg-crypto-gradient hover:opacity-90"
+            >
+              Connect Wallet
+            </Button>
           )}
         </div>
       </header>
