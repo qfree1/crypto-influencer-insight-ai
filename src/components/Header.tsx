@@ -134,7 +134,7 @@ const Header = () => {
             />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-              <span className="font-medium text-sm">{tokenBalance} WEB3D</span>
+              <span className="font-medium text-sm">{tokenBalance}</span>
             </div>
           </div>
         </div>
@@ -186,7 +186,7 @@ const Header = () => {
               />
               <div className="flex flex-col">
                 <span className="text-xs text-muted-foreground">WEB3D Balance</span>
-                <span className="font-medium">{tokenBalance} WEB3D</span>
+                <span className="font-medium">{tokenBalance}</span>
               </div>
             </div>
           </div>

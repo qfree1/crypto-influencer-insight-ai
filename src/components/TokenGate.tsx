@@ -34,13 +34,13 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
           <p className="text-muted-foreground">
             {web3State.hasTokens
               ? "You have the required tokens! Full access granted."
-              : "You don't have enough $WEB3D tokens for unlimited access."}
+              : "You don't have enough WEB3D tokens for unlimited access."}
           </p>
         </div>
 
         <div className="w-full space-y-4">
           <div className="flex justify-between items-center p-3 rounded-lg bg-secondary">
-            <span>$WEB3D Balance:</span>
+            <span>WEB3D Balance:</span>
             <span className="font-mono font-bold">{web3State.tokenBalance}</span>
           </div>
           
@@ -62,7 +62,7 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
             <span>Cost Per Analysis:</span>
             <div className="flex items-center gap-1">
               <Coins className="text-primary w-4 h-4" />
-              <span className="font-mono font-bold">100 $WEB3D</span>
+              <span className="font-mono font-bold">100 WEB3D</span>
             </div>
           </div>
         </div>
@@ -82,8 +82,8 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
         {!web3State.hasTokens && (
           <p className="text-xs text-muted-foreground text-center">
             {web3State.freeReportUsed 
-              ? "You've used your free report. Each additional report costs 100 $WEB3D tokens." 
-              : "You can use your one-time free report or acquire $WEB3D tokens for unlimited access at 100 tokens per report."}
+              ? "You've used your free report. Each additional report costs 100 WEB3D tokens." 
+              : "You can use your one-time free report or acquire WEB3D tokens for unlimited access at 100 tokens per report."}
           </p>
         )}
       </div>

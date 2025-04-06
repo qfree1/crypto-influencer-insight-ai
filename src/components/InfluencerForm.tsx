@@ -114,9 +114,9 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
             {!web3State.freeReportUsed ? (
               <span>You have 1 free analysis available</span>
             ) : web3State.hasTokens ? (
-              <span>Analysis cost: 100 $WEB3D tokens</span>
+              <span>Analysis cost: 100 WEB3D</span>
             ) : (
-              <span className="text-destructive">Insufficient tokens. Need 100 $WEB3D tokens for analysis</span>
+              <span className="text-destructive">Insufficient tokens. Need 100 WEB3D tokens for analysis</span>
             )}
           </div>
 
