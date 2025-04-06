@@ -66,45 +66,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer" 
-            onClick={() => navigate('/')}
-          >
-            <div className="w-10 h-10 rounded-lg bg-crypto-gradient flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/4207036d-b43e-4c52-b710-684edb26b137.png" 
-                alt="Web3D Logo" 
-                className="w-8 h-8 circle-glow"
-              />
-            </div>
-            <div className={isMobile ? "hidden" : "block"}>
-              <h1 className="font-bold text-xl text-gradient">Web3D Influencer Analysis</h1>
-              <p className="text-xs text-muted-foreground">AI-powered blockchain risk analysis</p>
-            </div>
-          </div>
-          
-          {web3State.isConnected ? (
-            <div className="flex items-center space-x-1 bg-muted px-3 py-1 rounded-full text-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              <span className="font-mono">
-                {web3State.address?.substring(0, 6)}...{web3State.address?.substring(38)}
-              </span>
-            </div>
-          ) : (
-            <Button 
-              onClick={() => setAppState(AppState.CONNECT_WALLET)} 
-              className="bg-crypto-gradient hover:opacity-90"
-              size={isMobile ? "sm" : "default"}
-            >
-              Connect Wallet
-            </Button>
-          )}
-        </div>
-      </header>
-
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         {appState === AppState.CONNECT_WALLET && (
           <WalletConnection web3State={web3State} setWeb3State={setWeb3State} />
         )}
@@ -143,13 +105,7 @@ const Index = () => {
         {appState === AppState.SHOW_REPORT && report && (
           <AnalysisReport report={report} onNewAnalysis={startNewAnalysis} />
         )}
-      </main>
-
-      <footer className="border-t border-border py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Web3Decision &copy; 2025</p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };
