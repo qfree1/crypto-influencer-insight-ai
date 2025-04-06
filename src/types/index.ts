@@ -54,3 +54,25 @@ export enum AppState {
   LOADING_REPORT = 'loading_report',
   SHOW_REPORT = 'show_report',
 }
+
+// Transaction Types
+export interface TransactionResult {
+  success: boolean;
+  hash?: string;
+  error?: string;
+}
+
+// API Response Types
+export interface VerifyWalletResponse {
+  walletAddress: string;
+  balance: string;
+  eligible: boolean;
+  freeReportUsed: boolean;
+}
+
+export interface ProcessPaymentResponse {
+  walletAddress: string;
+  amount: string;
+  tx_hash: string;
+  success: boolean;
+}

@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { connectWallet, setupWeb3Listeners } from '@/services/web3Service';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Wallet } from 'lucide-react';
+import { Wallet, AlertCircle } from 'lucide-react';
 import { Web3State } from '@/types';
+import { toast } from '@/hooks/use-toast';
 
 interface WalletConnectionProps {
   web3State: Web3State;
@@ -13,11 +14,24 @@ interface WalletConnectionProps {
 
 const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showMetaMaskHelp, setShowMetaMaskHelp] = useState(false);
 
   useEffect(() => {
+    // Check if MetaMask is installed
+    const hasMetaMask = !!window.ethereum;
+    setShowMetaMaskHelp(!hasMetaMask);
+    
     // Set up listeners for account changes
     setupWeb3Listeners((newState) => {
       setWeb3State({ ...web3State, ...newState });
+      
+      // Show toast when account changes
+      if (newState.address && newState.address !== web3State.address) {
+        toast({
+          title: "Account Changed",
+          description: `Connected to ${newState.address.substring(0, 6)}...${newState.address.substring(38)}`,
+        });
+      }
     });
   }, []);
 
@@ -26,6 +40,10 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
     try {
       const state = await connectWallet();
       setWeb3State(state);
+      
+      if (!state.isConnected) {
+        setShowMetaMaskHelp(true);
+      }
     } finally {
       setIsConnecting(false);
     }
@@ -52,6 +70,25 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
         >
           {isConnecting ? 'Connecting...' : 'Connect Wallet'}
         </Button>
+        
+        {showMetaMaskHelp && (
+          <div className="bg-muted p-4 rounded-lg flex items-start gap-3">
+            <AlertCircle className="text-yellow-500 w-5 h-5 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm">
+                MetaMask or compatible wallet extension not detected. Please install MetaMask to use this application.
+              </p>
+              <a 
+                href="https://metamask.io/download/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary hover:underline mt-2 inline-block"
+              >
+                Download MetaMask
+              </a>
+            </div>
+          </div>
+        )}
         
         <p className="text-xs text-muted-foreground text-center">
           You need to hold 1000 $WEB3D tokens to access all features.

@@ -96,7 +96,19 @@ export const connectWallet = async (): Promise<Web3State> => {
 export const getTokenBalance = async (address: string): Promise<string> => {
   try {
     // For demo purposes, return a random balance 
-    // In production, this would call the actual token contract
+    // In production, this would call the actual token contract using ethers.js:
+    /*
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const tokenContract = new ethers.Contract(
+      WEB3D_TOKEN_ADDRESS,
+      WEB3D_TOKEN_ABI,
+      provider
+    );
+    
+    const balance = await tokenContract.balanceOf(address);
+    return ethers.formatUnits(balance, 18);
+    */
+    
     return (Math.floor(Math.random() * 2000) + 1).toString();
   } catch (error) {
     console.error('Error getting token balance:', error);
@@ -108,7 +120,26 @@ export const getTokenBalance = async (address: string): Promise<string> => {
 export const payForReport = async (address: string): Promise<boolean> => {
   try {
     // For demo purposes, just simulate a successful payment
-    // In production, this would call the transfer method on the token contract
+    // In production, this would call the transfer method on the token contract:
+    /*
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const tokenContract = new ethers.Contract(
+      WEB3D_TOKEN_ADDRESS,
+      WEB3D_TOKEN_ABI,
+      signer
+    );
+    
+    const tx = await tokenContract.transfer(
+      WEB3D_TREASURY, 
+      ethers.parseUnits(REPORT_COST.toString(), 18)
+    );
+    
+    await tx.wait();
+    */
+    
+    // Simulate transaction processing delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
       title: "Payment Successful",
@@ -130,6 +161,11 @@ export const payForReport = async (address: string): Promise<boolean> => {
 // Mark free report as used
 export const markFreeReportUsed = (address: string): void => {
   localStorage.setItem(`freeReport_${address}`, 'true');
+};
+
+// Check if user has used free report
+export const hasFreeReportBeenUsed = (address: string): boolean => {
+  return localStorage.getItem(`freeReport_${address}`) === 'true';
 };
 
 // Listen for account changes
