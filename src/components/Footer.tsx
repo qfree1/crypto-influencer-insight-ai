@@ -12,7 +12,7 @@ const Footer = () => {
           {/* Logo and copyright */}
           <div className="flex items-center gap-2">
             <img 
-              src="/lovable-uploads/ce27c7ed-3e76-43e2-a2eb-3e44bea8d256.png" 
+              src="/lovable-uploads/c1b8b8f0-c5bf-489f-a603-c8465207d3dd.png" 
               alt="Web3D Logo" 
               className="w-6 h-6 circle-glow" 
             />
