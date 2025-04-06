@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle, Coins } from 'lucide-react';
 import { Web3State } from '@/types';
 import { markFreeReportUsed, payForReport } from '@/services/web3Service';
+import { toast } from '@/hooks/use-toast';
 
 interface InfluencerFormProps {
   web3State: Web3State;
@@ -44,8 +45,12 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
           ...web3State,
           freeReportUsed: true
         });
-      } else if (web3State.hasTokens && web3State.freeReportUsed) {
-        // Pay for report
+        toast({
+          title: "Free Analysis Used",
+          description: "You've used your one-time free analysis",
+        });
+      } else if (web3State.freeReportUsed) {
+        // Pay for report with 100 tokens
         const success = await payForReport(web3State.address || '');
         if (!success) {
           setError('Payment failed. Please try again.');
@@ -67,10 +72,17 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
   const exampleHandles = ['CryptoXKing', 'CryptoGem', 'TokenPump'];
 
   return (
-    <Card className="crypto-card w-full max-w-md mx-auto">
+    <Card className="crypto-card w-full mx-auto">
       <div className="flex flex-col p-6 space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-gradient">Analyze Influencer Credibility</h2>
+          <div className="flex items-center justify-center mb-2">
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Logo" 
+              className="w-10 h-10 mr-2" 
+            />
+            <h2 className="text-2xl font-bold text-gradient">Analyze Influencer Credibility</h2>
+          </div>
           <p className="text-muted-foreground">
             Enter a Twitter/X handle to analyze their credibility and risk profile.
           </p>
@@ -97,10 +109,21 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
             </div>
           )}
 
+          <div className="p-3 rounded-lg bg-muted/40 text-sm flex items-center gap-2">
+            <Coins className="h-4 w-4 text-primary" />
+            {!web3State.freeReportUsed ? (
+              <span>You have 1 free analysis available</span>
+            ) : web3State.hasTokens ? (
+              <span>Analysis cost: 100 $WEB3D tokens</span>
+            ) : (
+              <span className="text-destructive">Insufficient tokens. Need 100 $WEB3D tokens for analysis</span>
+            )}
+          </div>
+
           <Button 
             type="submit"
             className="w-full bg-crypto-gradient hover:opacity-90 transition-opacity"
-            disabled={isSubmitting || !handle.trim()}
+            disabled={isSubmitting || !handle.trim() || (web3State.freeReportUsed && !web3State.hasTokens)}
           >
             {isSubmitting ? 'Analyzing...' : 'Analyze Influencer'}
           </Button>

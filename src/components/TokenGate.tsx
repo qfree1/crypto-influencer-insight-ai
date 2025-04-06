@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, CheckCircle, XCircle, Coins } from 'lucide-react';
 import { Web3State } from '@/types';
 
 interface TokenGateProps {
@@ -22,7 +22,11 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
     <Card className="crypto-card w-full max-w-md mx-auto">
       <div className="flex flex-col items-center p-6 space-y-6">
         <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
-          <Shield className={`w-10 h-10 ${web3State.hasTokens ? 'text-green-500' : 'text-amber-500'}`} />
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Logo" 
+            className="w-16 h-16" 
+          />
         </div>
         
         <div className="text-center space-y-2">
@@ -53,6 +57,14 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
               <XCircle className="text-red-500 w-5 h-5" />
             )}
           </div>
+          
+          <div className="flex justify-between items-center p-3 rounded-lg bg-secondary">
+            <span>Cost Per Analysis:</span>
+            <div className="flex items-center gap-1">
+              <Coins className="text-primary w-4 h-4" />
+              <span className="font-mono font-bold">100 $WEB3D</span>
+            </div>
+          </div>
         </div>
 
         <Button 
@@ -70,8 +82,8 @@ const TokenGate = ({ web3State, onContinue }: TokenGateProps) => {
         {!web3State.hasTokens && (
           <p className="text-xs text-muted-foreground text-center">
             {web3State.freeReportUsed 
-              ? "You've used your free report and need 1000 $WEB3D tokens to continue." 
-              : "You can use your one-time free report or acquire 1000 $WEB3D tokens for unlimited access."}
+              ? "You've used your free report. Each additional report costs 100 $WEB3D tokens." 
+              : "You can use your one-time free report or acquire $WEB3D tokens for unlimited access at 100 tokens per report."}
           </p>
         )}
       </div>

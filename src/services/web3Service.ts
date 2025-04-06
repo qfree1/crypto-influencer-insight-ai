@@ -24,7 +24,7 @@ const WEB3D_TOKEN_ABI = [
     type: 'function',
   },
 ];
-const WEB3D_TREASURY = '0x0987654321098765432109876543210987654321'; // Example treasury address
+const WEB3D_TREASURY = '0xcaE2D679961bd3e7501E9a48a9f820521bE6d1eE'; // Updated treasury address
 const REQUIRED_TOKENS = 1000; // 1000 WEB3D tokens required
 const REPORT_COST = 100; // 100 WEB3D tokens per additional report
 

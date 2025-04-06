@@ -76,7 +76,7 @@ const Index = () => {
           <img 
             src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
             alt="Web3D Logo" 
-            className="w-16 h-16 circle-glow animate-pulse-subtle" 
+            className="w-20 h-20 circle-glow animate-pulse-subtle" 
           />
         </div>
         
@@ -110,6 +110,11 @@ const Index = () => {
         
         {appState === AppState.LOADING_REPORT && (
           <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Logo" 
+              className="w-16 h-16 animate-bounce" 
+            />
             <Loader className="w-12 h-12 animate-spin text-primary" />
             <p className="text-muted-foreground">Analyzing influencer data...</p>
           </div>
