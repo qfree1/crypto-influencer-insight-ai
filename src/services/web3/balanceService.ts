@@ -97,7 +97,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
     // Fallback to simulated balance for development
     if (process.env.NODE_ENV === 'development') {
       console.warn('Using simulated balance for development');
-      const simulatedBalance = formatTokenBalance((Math.floor(Math.random() * 2000) + 1).toString());
+      const simulatedBalance = formatTokenBalance((Math.random() * 10000).toString());
       
       // Update cache
       balanceCache.set(address, { balance: simulatedBalance, timestamp: Date.now() });

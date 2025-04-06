@@ -206,9 +206,6 @@ export const autoReconnectWallet = async (): Promise<Web3State> => {
   }
 };
 
-// Setup listeners for wallet events
-export const setupWalletListeners = setupWeb3Listeners;
-
 // Disconnect wallet
 export const disconnectWallet = (): Web3State => {
   // Clear local storage
