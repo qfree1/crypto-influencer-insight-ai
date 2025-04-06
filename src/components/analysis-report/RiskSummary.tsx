@@ -32,12 +32,12 @@ const RiskSummary = ({ summary, detailedAnalysis, twitterMetrics }: RiskSummaryP
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
           <StatCard 
-            icon={<Users className="w-5 h-5 text-blue-500" />}
+            icon={<Users className="w-5 h-5" />}
             label="Real Followers"
             value={`${twitterMetrics.realFollowerPercentage}%`}
           />
           <StatCard 
-            icon={<BarChart className="w-5 h-5 text-purple-500" />}
+            icon={<BarChart className="w-5 h-5" />}
             label="Engagement"
             value={`${twitterMetrics.engagementRate}%`}
           />
@@ -57,10 +57,10 @@ const RiskSummary = ({ summary, detailedAnalysis, twitterMetrics }: RiskSummaryP
   );
 };
 
-// Helper Component with improved styling
+// Helper Component
 const StatCard = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
-  <div className="bg-muted p-3 rounded-lg flex flex-col items-center space-y-2 hover:bg-muted/80 transition-colors">
-    <div className="p-2 bg-background rounded-full">{icon}</div>
+  <div className="bg-muted p-3 rounded-lg flex flex-col items-center space-y-2">
+    {icon}
     <span className="text-sm text-muted-foreground">{label}</span>
     <span className="font-bold">{value}</span>
   </div>

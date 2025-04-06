@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,8 +41,7 @@ const Header = () => {
             const address = accounts[0];
             setWalletAddress(address);
             const balance = await getTokenBalance(address);
-            const formattedBalance = parseFloat(balance).toFixed(2);
-            setTokenBalance(formattedBalance);
+            setTokenBalance(balance);
           }
         } catch (error) {
           console.error("Error checking wallet connection:", error);
@@ -58,8 +58,7 @@ const Header = () => {
           const address = accounts[0];
           setWalletAddress(address);
           const balance = await getTokenBalance(address);
-          const formattedBalance = parseFloat(balance).toFixed(2);
-          setTokenBalance(formattedBalance);
+          setTokenBalance(balance);
         } else {
           setWalletAddress(null);
           setTokenBalance("0");
@@ -128,9 +127,11 @@ const Header = () => {
 
           {/* Web3D Balance Display */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/80 border border-primary/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center w-6 h-6 bg-primary/20 rounded-full">
-              <span className="text-xs font-bold text-primary">W3D</span>
-            </div>
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Token" 
+              className="h-5 w-5" 
+            />
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground">WEB3D Balance</span>
               <span className="font-medium text-sm">{tokenBalance} WEB3D</span>
@@ -178,9 +179,11 @@ const Header = () => {
             
             {/* Mobile Web3D Balance Display */}
             <div className="flex items-center gap-2 p-3 rounded-lg bg-background/80 border border-primary/30">
-              <div className="flex items-center justify-center w-6 h-6 bg-primary/20 rounded-full">
-                <span className="text-xs font-bold text-primary">W3D</span>
-              </div>
+              <img 
+                src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+                alt="Web3D Token" 
+                className="h-5 w-5" 
+              />
               <div className="flex flex-col">
                 <span className="text-xs text-muted-foreground">WEB3D Balance</span>
                 <span className="font-medium">{tokenBalance} WEB3D</span>

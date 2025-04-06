@@ -1,7 +1,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { BarChart } from 'lucide-react';
 
 interface AnalysisNavProps {
   onNewAnalysis: () => void;
@@ -12,9 +11,8 @@ const AnalysisNav = ({ onNewAnalysis }: AnalysisNavProps) => {
     <Card className="crypto-card p-6">
       <button 
         onClick={onNewAnalysis}
-        className="w-full py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 px-4 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
       >
-        <BarChart className="w-4 h-4" />
         Analyze Another Influencer
       </button>
     </Card>
