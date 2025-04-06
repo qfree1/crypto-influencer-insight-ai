@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { AppState, RiskReport, Web3State } from '@/types';
-import { initialWeb3State } from '@/services/web3Service';
+import { initialWeb3State, autoReconnectWallet } from '@/services/web3Service';
 import { generateReport } from '@/services/aiService';
 import WalletConnection from '@/components/WalletConnection';
 import TokenGate from '@/components/TokenGate';
@@ -14,14 +14,36 @@ import { Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { saveAnalysisToHistory } from '@/services/storageService';
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECT_WALLET);
   const [web3State, setWeb3State] = useState<Web3State>(initialWeb3State);
   const [report, setReport] = useState<RiskReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAutoConnecting, setIsAutoConnecting] = useState(true);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Auto-reconnect wallet on page load
+  useEffect(() => {
+    const reconnect = async () => {
+      try {
+        const reconnectedState = await autoReconnectWallet();
+        
+        if (reconnectedState.isConnected) {
+          setWeb3State(reconnectedState);
+          setAppState(AppState.VERIFY_TOKENS);
+        }
+      } catch (error) {
+        console.error('Error auto-reconnecting wallet:', error);
+      } finally {
+        setIsAutoConnecting(false);
+      }
+    };
+    
+    reconnect();
+  }, []);
 
   const handleWalletVerification = () => {
     setAppState(AppState.VERIFY_TOKENS);
@@ -38,6 +60,16 @@ const Index = () => {
     try {
       const reportData = await generateReport(handle);
       setReport(reportData);
+      
+      // Save analysis to history
+      if (reportData && web3State.address) {
+        saveAnalysisToHistory({
+          influencer: handle,
+          date: new Date().toISOString(),
+          reportId: reportData.id || Date.now().toString()
+        });
+      }
+      
       setAppState(AppState.SHOW_REPORT);
     } catch (error) {
       console.error('Error generating report:', error);
@@ -64,6 +96,27 @@ const Index = () => {
       handleWalletVerification();
     }
   }, [web3State.isConnected, appState]);
+
+  // Display loading indicator during auto-connect
+  if (isAutoConnecting) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Web3DBackgroundLogo />
+        
+        <div className="container mx-auto px-4 py-8 flex items-center justify-center" style={{ minHeight: 'calc(100vh - 100px)' }}>
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Logo" 
+              className="w-16 h-16 animate-bounce" 
+            />
+            <Loader className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Reconnecting wallet...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

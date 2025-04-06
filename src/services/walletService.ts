@@ -4,10 +4,14 @@ import { toast } from '@/hooks/use-toast';
 import { 
   initialWeb3State,
   getTokenBalance,
-  hasFreeReportUsed,
   setupWeb3Listeners 
 } from '@/services/web3Service';
 import { REQUIRED_TOKENS } from '@/services/web3/tokenUtils';
+import { 
+  saveWalletConnection, 
+  getSavedWalletConnection,
+  hasFreeReportUsed 
+} from '@/services/storageService';
 
 export enum WalletProvider {
   METAMASK = 'metamask',
@@ -86,6 +90,9 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
 
     const address = accounts[0];
 
+    // Save wallet connection to local storage
+    saveWalletConnection(address, provider);
+
     // Get token balance
     const tokenBalance = await getTokenBalance(address);
     const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
@@ -112,5 +119,41 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
   }
 };
 
-// Setup listeners for wallet events - now just use the function from web3Service
+// Auto-reconnect wallet from saved connection
+export const autoReconnectWallet = async (): Promise<Web3State> => {
+  const { address, provider } = getSavedWalletConnection();
+  
+  if (address && provider && window.ethereum) {
+    try {
+      // Check if the address is still in connected accounts
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      
+      if (accounts.includes(address)) {
+        // If the address is available, reconnect using the saved provider
+        return await connectToWallet(provider as WalletProvider);
+      }
+    } catch (error) {
+      console.error('Auto-reconnect error:', error);
+      // Silent failure - will return initialWeb3State
+    }
+  }
+  
+  return initialWeb3State;
+};
+
+// Setup listeners for wallet events
 export const setupWalletListeners = setupWeb3Listeners;
+
+// Disconnect wallet
+export const disconnectWallet = (): Web3State => {
+  // Clear local storage
+  localStorage.removeItem('web3d_connected_wallet');
+  localStorage.removeItem('web3d_wallet_provider');
+  
+  toast({
+    title: "Wallet Disconnected",
+    description: "Your wallet has been disconnected",
+  });
+  
+  return initialWeb3State;
+};
