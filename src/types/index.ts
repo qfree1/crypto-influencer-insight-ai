@@ -76,3 +76,11 @@ export interface ProcessPaymentResponse {
   tx_hash: string;
   success: boolean;
 }
+
+// Add type definition for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+    BinanceChain?: any;
+  }
+}

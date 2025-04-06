@@ -37,78 +37,11 @@ export const initialWeb3State: Web3State = {
   freeReportUsed: false,
 };
 
-// Connect to wallet
-export const connectWallet = async (): Promise<Web3State> => {
-  try {
-    // Check if MetaMask is installed
-    if (!window.ethereum) {
-      toast({
-        title: "MetaMask Not Found",
-        description: "Please install MetaMask to use this application",
-        variant: "destructive",
-      });
-      return initialWeb3State;
-    }
-
-    // Request account access
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    
-    if (accounts.length === 0) {
-      return initialWeb3State;
-    }
-
-    const address = accounts[0];
-
-    // Get token balance (using simulated data for demo)
-    // In production, you would use ethers.js or web3.js to call the actual token contract
-    const tokenBalance = await getTokenBalance(address);
-    const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
-
-    // Check if the user has used their free report (would normally check from backend/local storage)
-    const freeReportUsed = localStorage.getItem(`freeReport_${address}`) === 'true';
-
-    toast({
-      title: "Wallet Connected",
-      description: `Connected to address ${address.substring(0, 6)}...${address.substring(38)}`,
-    });
-
-    return {
-      isConnected: true,
-      address,
-      chainId: parseInt(chainId, 16),
-      hasTokens,
-      tokenBalance,
-      freeReportUsed,
-    };
-  } catch (error) {
-    console.error('Error connecting wallet:', error);
-    toast({
-      title: "Connection Failed",
-      description: "Failed to connect to your wallet",
-      variant: "destructive",
-    });
-    return initialWeb3State;
-  }
-};
-
 // Get token balance from contract
 export const getTokenBalance = async (address: string): Promise<string> => {
   try {
     // For demo purposes, return a random balance 
-    // In production, this would call the actual token contract using ethers.js:
-    /*
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const tokenContract = new ethers.Contract(
-      WEB3D_TOKEN_ADDRESS,
-      WEB3D_TOKEN_ABI,
-      provider
-    );
-    
-    const balance = await tokenContract.balanceOf(address);
-    return ethers.formatUnits(balance, 18);
-    */
-    
+    // In production, this would call the actual token contract using ethers.js
     return (Math.floor(Math.random() * 2000) + 1).toString();
   } catch (error) {
     console.error('Error getting token balance:', error);
@@ -120,23 +53,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
 export const payForReport = async (address: string): Promise<boolean> => {
   try {
     // For demo purposes, just simulate a successful payment
-    // In production, this would call the transfer method on the token contract:
-    /*
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const tokenContract = new ethers.Contract(
-      WEB3D_TOKEN_ADDRESS,
-      WEB3D_TOKEN_ABI,
-      signer
-    );
-    
-    const tx = await tokenContract.transfer(
-      WEB3D_TREASURY, 
-      ethers.parseUnits(REPORT_COST.toString(), 18)
-    );
-    
-    await tx.wait();
-    */
+    // In production, this would call the transfer method on the token contract
     
     // Simulate transaction processing delay
     await new Promise(resolve => setTimeout(resolve, 1500));

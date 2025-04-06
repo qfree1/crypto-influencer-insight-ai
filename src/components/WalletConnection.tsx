@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { connectWallet, setupWeb3Listeners } from '@/services/web3Service';
-import { Button } from '@/components/ui/button';
+import { setupWalletListeners } from '@/services/walletService';
 import { Card } from '@/components/ui/card';
 import { Wallet, AlertCircle, Shield, Check } from 'lucide-react';
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
+import WalletSelector from './WalletSelector';
 
 interface WalletConnectionProps {
   web3State: Web3State;
@@ -18,37 +18,15 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    // Check if MetaMask is installed
-    const hasMetaMask = !!window.ethereum;
-    setShowMetaMaskHelp(!hasMetaMask);
+    // Check if any Web3 provider is installed
+    const hasWeb3Provider = !!window.ethereum;
+    setShowMetaMaskHelp(!hasWeb3Provider);
     
     // Set up listeners for account changes
-    setupWeb3Listeners((newState) => {
+    setupWalletListeners((newState) => {
       setWeb3State({ ...web3State, ...newState });
-      
-      // Show toast when account changes
-      if (newState.address && newState.address !== web3State.address) {
-        toast({
-          title: "Account Connected",
-          description: `Connected to ${newState.address.substring(0, 6)}...${newState.address.substring(38)}`,
-        });
-      }
     });
   }, []);
-
-  const handleConnect = async () => {
-    setIsConnecting(true);
-    try {
-      const state = await connectWallet();
-      setWeb3State(state);
-      
-      if (!state.isConnected) {
-        setShowMetaMaskHelp(true);
-      }
-    } finally {
-      setIsConnecting(false);
-    }
-  };
 
   return (
     <Card className="crypto-card w-full max-w-md mx-auto relative overflow-hidden">
@@ -91,32 +69,38 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
           </div>
         </div>
 
-        <Button 
-          className="w-full bg-crypto-gradient hover:opacity-90 transition-all duration-300 py-6 h-auto text-lg relative overflow-hidden group"
-          onClick={handleConnect}
-          disabled={isConnecting}
-        >
-          <span className="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
-          <span className="relative">
-            {isConnecting ? 'Connecting...' : 'Connect Wallet'}
-          </span>
-        </Button>
+        <WalletSelector 
+          web3State={web3State} 
+          setWeb3State={setWeb3State}
+          isConnecting={isConnecting}
+          setIsConnecting={setIsConnecting}
+        />
         
         {showMetaMaskHelp && (
           <div className="bg-muted p-4 rounded-lg flex items-start gap-3 animate-fade-in">
             <AlertCircle className="text-yellow-500 w-5 h-5 mt-0.5 shrink-0" />
             <div>
               <p className="text-sm">
-                MetaMask or compatible wallet extension not detected. Please install MetaMask to use this application.
+                No Web3 wallet detected. Please install a wallet to use this application.
               </p>
-              <a 
-                href="https://metamask.io/download/" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline mt-2 inline-block"
-              >
-                Download MetaMask
-              </a>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <a 
+                  href="https://metamask.io/download/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline inline-block"
+                >
+                  Download MetaMask
+                </a>
+                <a 
+                  href="https://trustwallet.com/download" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline inline-block"
+                >
+                  Download Trust Wallet
+                </a>
+              </div>
             </div>
           </div>
         )}

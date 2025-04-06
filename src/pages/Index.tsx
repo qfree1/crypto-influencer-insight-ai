@@ -12,6 +12,7 @@ import SubscriptionBanner from '@/components/SubscriptionBanner';
 import { Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECT_WALLET);
@@ -19,6 +20,7 @@ const Index = () => {
   const [report, setReport] = useState<RiskReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const handleWalletVerification = () => {
     setAppState(AppState.VERIFY_TOKENS);
@@ -77,7 +79,7 @@ const Index = () => {
                 className="w-8 h-8 circle-glow"
               />
             </div>
-            <div>
+            <div className={isMobile ? "hidden" : "block"}>
               <h1 className="font-bold text-xl text-gradient">Web3D Influencer Analysis</h1>
               <p className="text-xs text-muted-foreground">AI-powered blockchain risk analysis</p>
             </div>
@@ -94,6 +96,7 @@ const Index = () => {
             <Button 
               onClick={() => setAppState(AppState.CONNECT_WALLET)} 
               className="bg-crypto-gradient hover:opacity-90"
+              size={isMobile ? "sm" : "default"}
             >
               Connect Wallet
             </Button>
