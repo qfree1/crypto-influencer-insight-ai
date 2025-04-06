@@ -84,7 +84,7 @@ const Header = () => {
         >
           <div className="relative">
             <img 
-              src="/lovable-uploads/c1b8b8f0-c5bf-489f-a603-c8465207d3dd.png" 
+              src="/lovable-uploads/109d7162-8b5e-408b-848d-a595d3ad9563.png" 
               alt="Web3D Logo" 
               className={cn(
                 "w-10 h-10 circle-glow logo-spin",
@@ -175,6 +175,21 @@ const Header = () => {
                 >
                   <img src="/lovable-uploads/0ab09c9d-e9a7-4194-8201-1dc1fe804d97.png" alt="WalletConnect" className="w-12 h-12 object-contain" />
                   <p className="text-sm font-medium">WalletConnect</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center mt-4 p-3 bg-muted/30 rounded-md">
+                <div className="text-sm text-muted-foreground">
+                  <span className="text-yellow-500 mr-2">⚠</span>
+                  <span>Don't have a wallet? </span>
+                  <a 
+                    href="https://metamask.io/download/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Get MetaMask
+                  </a>
                 </div>
               </div>
             </DialogContent>
