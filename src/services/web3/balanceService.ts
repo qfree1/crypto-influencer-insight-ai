@@ -10,18 +10,11 @@ import {
 
 // Improved cache mechanism for token balances
 const balanceCache = new Map<string, { balance: string, timestamp: number }>();
-const CACHE_TTL = 30000; // 30 seconds cache lifetime
+const CACHE_TTL = 10000; // 10 seconds cache lifetime (reduced from 30s)
 
 // Fetch token balance using BSCScan API when Web3 provider is not available
 export const fetchTokenBalanceFromAPI = async (address: string): Promise<string> => {
   try {
-    // Check cache first
-    const cachedData = balanceCache.get(address);
-    if (cachedData && Date.now() - cachedData.timestamp < CACHE_TTL) {
-      console.log(`Using cached balance for ${address}`);
-      return cachedData.balance;
-    }
-    
     console.log(`Fetching balance from BSCScan API for ${address}`);
     const url = `${BSC_EXPLORER_URL}?module=account&action=tokenbalance&contractaddress=${WEB3D_TOKEN_ADDRESS}&address=${address}&tag=latest&apikey=${BSC_EXPLORER_API_KEY}`;
     
@@ -35,6 +28,7 @@ export const fetchTokenBalanceFromAPI = async (address: string): Promise<string>
       
       // Update cache
       balanceCache.set(address, { balance: result, timestamp: Date.now() });
+      console.log(`Updated cache with BSCScan balance: ${result}`);
       
       return result;
     }
@@ -54,7 +48,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
   // Check cache first
   const cachedData = balanceCache.get(address);
   if (cachedData && Date.now() - cachedData.timestamp < CACHE_TTL) {
-    console.log(`Using cached balance for ${address}`);
+    console.log(`Using cached balance for ${address}: ${cachedData.balance}`);
     return cachedData.balance;
   }
   
@@ -80,6 +74,8 @@ export const getTokenBalance = async (address: string): Promise<string> => {
         // Convert balance from wei to token units (assuming 18 decimals)
         const formattedBalance = ethers.formatUnits(balance, 18);
         const result = formatTokenBalance(formattedBalance);
+        
+        console.log(`Fetched contract balance: ${result}`);
         
         // Update cache
         balanceCache.set(address, { balance: result, timestamp: Date.now() });
@@ -116,8 +112,10 @@ export const getTokenBalance = async (address: string): Promise<string> => {
 // Clear balance cache for an address or all addresses
 export const clearBalanceCache = (address?: string) => {
   if (address) {
+    console.log(`Clearing balance cache for ${address}`);
     balanceCache.delete(address);
   } else {
+    console.log('Clearing all balance cache');
     balanceCache.clear();
   }
 };

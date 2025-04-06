@@ -42,10 +42,12 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
       }
       
       // Set up listeners for account changes
+      // Pass a callback function that creates and returns a new state object
       setupWeb3Listeners((newState) => {
-        // Create a new state object by merging the current state with the updates
-        const updatedState = { ...web3State, ...newState };
-        setWeb3State(updatedState);
+        setWeb3State({
+          ...web3State,
+          ...newState
+        });
       });
     };
     
@@ -173,4 +175,3 @@ const WalletConnection = ({ web3State, setWeb3State }: WalletConnectionProps) =>
 };
 
 export default WalletConnection;
-

@@ -36,10 +36,11 @@ export const setupWeb3Listeners = (callback: (newState: Partial<Web3State>) => v
         
         while (attempts < 3) {
           tokenBalance = await getTokenBalance(address);
+          console.log(`Balance attempt ${attempts + 1}:`, tokenBalance);
           if (parseFloat(tokenBalance) > 0 || attempts === 2) break;
           attempts++;
           // Small delay between retries
-          await new Promise(resolve => setTimeout(resolve, 300));
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
@@ -84,13 +85,18 @@ export const setupWeb3Listeners = (callback: (newState: Partial<Web3State>) => v
       .then(async (accounts: string[]) => {
         if (accounts.length > 0) {
           const address = accounts[0];
-          const tokenBalance = await getTokenBalance(address);
-          const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
-          
-          callback({
-            tokenBalance,
-            hasTokens
-          });
+          try {
+            // Clear cache to force fresh balance
+            const tokenBalance = await getTokenBalance(address);
+            const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
+            
+            callback({
+              tokenBalance,
+              hasTokens
+            });
+          } catch (error) {
+            console.error('Error getting balance after chain change:', error);
+          }
         }
       })
       .catch(console.error);
@@ -108,22 +114,27 @@ export const setupWeb3Listeners = (callback: (newState: Partial<Web3State>) => v
     });
   });
   
-  // Ensure we have the latest balance
+  // Ensure we have the latest balance on init
   window.ethereum.request({ method: 'eth_accounts' })
     .then(async (accounts: string[]) => {
       if (accounts.length > 0) {
         const address = accounts[0];
-        const tokenBalance = await getTokenBalance(address);
-        const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
-        const freeReportUsed = hasFreeReportUsed(address);
-        
-        callback({
-          isConnected: true,
-          address,
-          hasTokens,
-          tokenBalance,
-          freeReportUsed,
-        });
+        try {
+          // Clear cache to force fresh balance
+          const tokenBalance = await getTokenBalance(address);
+          const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
+          const freeReportUsed = hasFreeReportUsed(address);
+          
+          callback({
+            isConnected: true,
+            address,
+            hasTokens,
+            tokenBalance,
+            freeReportUsed,
+          });
+        } catch (error) {
+          console.error('Error getting initial balance:', error);
+        }
       }
     })
     .catch(console.error);

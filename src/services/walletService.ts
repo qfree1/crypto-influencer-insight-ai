@@ -9,6 +9,7 @@ import {
 } from '@/services/web3Service';
 import { REQUIRED_TOKENS } from '@/services/web3/tokenUtils';
 import { saveWalletConnection, getSavedWalletConnection } from '@/services/storageService';
+import { clearBalanceCache } from '@/services/web3/balanceService';
 
 export enum WalletProvider {
   METAMASK = 'metamask',
@@ -77,6 +78,9 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
         break;
     }
 
+    // Clear balance cache before connecting
+    clearBalanceCache();
+
     // Request account access
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const chainId = await ethereum.request({ method: 'eth_chainId' });
@@ -90,8 +94,19 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
     // Save wallet connection to local storage
     saveWalletConnection(address, provider);
 
-    // Get token balance
-    const tokenBalance = await getTokenBalance(address);
+    // Get token balance with retries
+    let attempts = 0;
+    let tokenBalance = '0';
+    
+    while (attempts < 3) {
+      tokenBalance = await getTokenBalance(address);
+      console.log(`Initial balance attempt ${attempts + 1}:`, tokenBalance);
+      if (parseFloat(tokenBalance) > 0 || attempts === 2) break;
+      attempts++;
+      // Small delay between retries
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
     const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
 
     // Check if the user has used their free report
@@ -131,6 +146,11 @@ export const autoReconnectWallet = async (): Promise<Web3State> => {
       return initialWeb3State;
     }
     
+    console.log(`Attempting to reconnect wallet: ${address} (${provider})`);
+    
+    // Clear balance cache before reconnecting
+    clearBalanceCache();
+    
     // Check if the address is still in connected accounts without prompting user
     try {
       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -139,12 +159,25 @@ export const autoReconnectWallet = async (): Promise<Web3State> => {
         // Get chain ID
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
         
-        // Get token balance
-        const tokenBalance = await getTokenBalance(address);
+        // Get token balance with retries
+        let attempts = 0;
+        let tokenBalance = '0';
+        
+        while (attempts < 3) {
+          tokenBalance = await getTokenBalance(address);
+          console.log(`Reconnect balance attempt ${attempts + 1}:`, tokenBalance);
+          if (parseFloat(tokenBalance) > 0 || attempts === 2) break;
+          attempts++;
+          // Small delay between retries
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
         const hasTokens = parseFloat(tokenBalance) >= REQUIRED_TOKENS;
         
         // Check free report usage
         const freeReportUsed = hasFreeReportUsed(address);
+        
+        console.log('Successfully reconnected wallet with balance:', tokenBalance);
         
         toast({
           title: "Wallet Reconnected",
@@ -181,6 +214,9 @@ export const disconnectWallet = (): Web3State => {
   // Clear local storage
   localStorage.removeItem('web3d_connected_wallet');
   localStorage.removeItem('web3d_wallet_provider');
+  
+  // Clear balance cache
+  clearBalanceCache();
   
   toast({
     title: "Wallet Disconnected",
