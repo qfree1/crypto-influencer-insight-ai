@@ -1,4 +1,4 @@
-
+import { ethers } from 'ethers';
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -43,7 +43,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
   
   try {
     // Create a web3 provider
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = new ethers.BrowserProvider(window.ethereum);
     
     // Create contract instance
     const tokenContract = new ethers.Contract(
@@ -56,7 +56,7 @@ export const getTokenBalance = async (address: string): Promise<string> => {
     const balance = await tokenContract.balanceOf(address);
     
     // Convert balance from wei to token units (assuming 18 decimals)
-    const formattedBalance = ethers.utils.formatUnits(balance, 18);
+    const formattedBalance = ethers.formatUnits(balance, 18);
     
     return formattedBalance;
   } catch (error) {
@@ -78,8 +78,8 @@ export const payForReport = async (address: string): Promise<boolean> => {
   
   try {
     // Create a web3 provider and signer
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
     
     // Create contract instance with signer
     const tokenContract = new ethers.Contract(
@@ -89,7 +89,7 @@ export const payForReport = async (address: string): Promise<boolean> => {
     );
     
     // Convert token amount to wei (assuming 18 decimals)
-    const amount = ethers.utils.parseUnits(REPORT_COST.toString(), 18);
+    const amount = ethers.parseUnits(REPORT_COST.toString(), 18);
     
     // Send transaction
     const tx = await tokenContract.transfer(WEB3D_TREASURY, amount);
