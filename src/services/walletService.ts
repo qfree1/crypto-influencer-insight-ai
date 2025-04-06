@@ -2,6 +2,8 @@
 import { Web3State } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { initialWeb3State } from '@/services/web3Service';
+import { getTokenBalance } from '@/services/web3/balanceService';
+import { hasFreeReportUsed } from '@/services/web3/reportService';
 
 export enum WalletProvider {
   METAMASK = 'metamask',
@@ -85,7 +87,7 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
     const hasTokens = parseFloat(tokenBalance) >= 1000; // Require 1000 tokens
 
     // Check if the user has used their free report
-    const freeReportUsed = localStorage.getItem(`freeReport_${address}`) === 'true';
+    const freeReportUsed = hasFreeReportUsed(address);
 
     return {
       isConnected: true,
@@ -106,12 +108,6 @@ export const connectToWallet = async (provider: WalletProvider): Promise<Web3Sta
   }
 };
 
-// Get token balance from contract (simulated)
-const getTokenBalance = async (address: string): Promise<string> => {
-  // For demo purposes, return a random balance between 0 and 2000
-  return (Math.floor(Math.random() * 2000) + 1).toString();
-};
-
 // Setup listeners for wallet events
 export const setupWalletListeners = (callback: (newState: Partial<Web3State>) => void): void => {
   if (!window.ethereum) return;
@@ -127,7 +123,7 @@ export const setupWalletListeners = (callback: (newState: Partial<Web3State>) =>
       const address = accounts[0];
       const tokenBalance = await getTokenBalance(address);
       const hasTokens = parseFloat(tokenBalance) >= 1000;
-      const freeReportUsed = localStorage.getItem(`freeReport_${address}`) === 'true';
+      const freeReportUsed = hasFreeReportUsed(address);
       
       callback({
         isConnected: true,
