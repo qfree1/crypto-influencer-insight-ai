@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,7 +27,22 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   
-  const wallets = getAvailableWalletProviders();
+  // Define wallet images with their respective providers
+  const walletImages = {
+    metamask: "/lovable-uploads/ffa286ae-d73c-4d2d-83c2-9af43f3804ed.png",
+    trustwallet: "/lovable-uploads/6c5ccb7c-5921-4517-a84e-049aec3f1fb7.png",
+    walletconnect: "/lovable-uploads/7c4f0768-c973-4657-aef1-d5527633688f.png",
+    binance: "/lovable-uploads/207314b1-a022-4bf7-8a2a-9b3466409400.png"
+  };
+  
+  const wallets = getAvailableWalletProviders().map(wallet => ({
+    ...wallet,
+    icon: wallet.provider === 'metamask' ? walletImages.metamask :
+          wallet.provider === 'trustwallet' ? walletImages.trustwallet :
+          wallet.provider === 'walletconnect' ? walletImages.walletconnect :
+          wallet.provider === 'binance' ? walletImages.binance :
+          wallet.icon
+  }));
 
   const handleConnectWallet = async (provider: WalletProvider) => {
     setIsConnecting(true);
@@ -101,7 +117,7 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
                   className="p-4 flex flex-col items-center justify-center space-y-3 hover:border-primary/50 transition-all cursor-pointer bg-card/70 backdrop-blur-sm"
                   onClick={() => handleConnectWallet(wallet.provider)}
                 >
-                  <img src={wallet.icon} alt={wallet.name} className="w-20 h-20 object-contain" />
+                  <img src={wallet.icon} alt={wallet.name} className="w-16 h-16 object-contain" />
                   <p className="text-sm font-medium">{wallet.name}</p>
                 </Card>
               ))}
@@ -118,7 +134,7 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
                     className="p-4 flex flex-col items-center justify-center space-y-3 hover:border-primary/50 transition-all cursor-pointer bg-card/70 backdrop-blur-sm"
                     onClick={() => handleConnectWallet(wallet.provider)}
                   >
-                    <img src={wallet.icon} alt={wallet.name} className="w-20 h-20 object-contain" />
+                    <img src={wallet.icon} alt={wallet.name} className="w-16 h-16 object-contain" />
                     <p className="text-sm font-medium">{wallet.name}</p>
                   </Card>
                 ))
