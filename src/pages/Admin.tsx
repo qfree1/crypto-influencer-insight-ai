@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -8,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { 
   Shield, 
   AlertTriangle, 
@@ -16,13 +17,34 @@ import {
   Database,
   ListFilter,
   Trash2,
-  Search
+  Search,
+  Settings,
+  Save,
+  FileText,
+  Download
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { InfluencerData, RiskReport } from '@/types';
 import { authenticateAdmin, getAllInfluencers, getAllReports, deleteInfluencer, deleteReport } from '@/services/databaseService';
 
-// Admin login form
+const API_CONFIG_KEY = 'api_configuration';
+const DATA_EXPORT_CONFIG_KEY = 'data_export_configuration';
+
+const DEFAULT_API_CONFIG = {
+  apiEndpoint: 'https://api.example.com/influencer-analysis',
+  apiKey: '',
+  useRealApi: false,
+  rateLimit: 10,
+  timeout: 30000,
+};
+
+const DEFAULT_EXPORT_CONFIG = {
+  includeDeletedReports: false,
+  exportFormat: 'json',
+  autoExportEnabled: false,
+  autoExportInterval: 24, // hours
+};
+
 const AdminLogin = ({ onLogin }: { onLogin: (success: boolean) => void }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -113,14 +135,235 @@ const AdminLogin = ({ onLogin }: { onLogin: (success: boolean) => void }) => {
   );
 };
 
-// Admin dashboard component
+const ConfigurationTab = () => {
+  const [apiConfig, setApiConfig] = useState(DEFAULT_API_CONFIG);
+  const [exportConfig, setExportConfig] = useState(DEFAULT_EXPORT_CONFIG);
+
+  useEffect(() => {
+    try {
+      const savedApiConfig = localStorage.getItem(API_CONFIG_KEY);
+      if (savedApiConfig) {
+        setApiConfig(JSON.parse(savedApiConfig));
+      }
+
+      const savedExportConfig = localStorage.getItem(DATA_EXPORT_CONFIG_KEY);
+      if (savedExportConfig) {
+        setExportConfig(JSON.parse(savedExportConfig));
+      }
+    } catch (error) {
+      console.error('Error loading configurations:', error);
+    }
+  }, []);
+
+  const saveApiConfig = () => {
+    try {
+      localStorage.setItem(API_CONFIG_KEY, JSON.stringify(apiConfig));
+      toast({
+        title: "API Configuration Saved",
+        description: "Your API settings have been updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save API configuration",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const saveExportConfig = () => {
+    try {
+      localStorage.setItem(DATA_EXPORT_CONFIG_KEY, JSON.stringify(exportConfig));
+      toast({
+        title: "Export Configuration Saved",
+        description: "Your data export settings have been updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save export configuration",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExportData = () => {
+    try {
+      const influencers = getAllInfluencers();
+      const reports = getAllReports();
+      
+      const exportData = {
+        influencers,
+        reports,
+        exportDate: new Date().toISOString(),
+        exportConfig
+      };
+      
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `influencer-analysis-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export Successful",
+        description: "Your data has been exported successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your data",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 border-primary/30">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <Settings className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold">API Configuration</h2>
+          </div>
+          <Button onClick={saveApiConfig} className="bg-crypto-gradient">
+            <Save className="w-4 h-4 mr-2" />
+            Save API Settings
+          </Button>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium mb-1 block">API Endpoint</label>
+            <Input 
+              value={apiConfig.apiEndpoint} 
+              onChange={(e) => setApiConfig({...apiConfig, apiEndpoint: e.target.value})}
+              placeholder="https://api.example.com/endpoint"
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-1 block">API Key</label>
+            <Input 
+              type="password"
+              value={apiConfig.apiKey} 
+              onChange={(e) => setApiConfig({...apiConfig, apiKey: e.target.value})}
+              placeholder="Enter your API key"
+            />
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-1 block">Rate Limit (requests per minute)</label>
+              <Input 
+                type="number"
+                value={apiConfig.rateLimit.toString()} 
+                onChange={(e) => setApiConfig({...apiConfig, rateLimit: parseInt(e.target.value) || 10})}
+              />
+            </div>
+            
+            <div className="flex-1">
+              <label className="text-sm font-medium mb-1 block">Timeout (ms)</label>
+              <Input 
+                type="number"
+                value={apiConfig.timeout.toString()} 
+                onChange={(e) => setApiConfig({...apiConfig, timeout: parseInt(e.target.value) || 30000})}
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="use-real-api"
+              checked={apiConfig.useRealApi}
+              onCheckedChange={(checked) => setApiConfig({...apiConfig, useRealApi: checked})}
+            />
+            <label htmlFor="use-real-api" className="text-sm font-medium">
+              Use Real API (instead of mocks)
+            </label>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 border-primary/30">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <FileText className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold">Data Export Configuration</h2>
+          </div>
+          <Button onClick={saveExportConfig} className="bg-crypto-gradient">
+            <Save className="w-4 h-4 mr-2" />
+            Save Export Settings
+          </Button>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="include-deleted"
+              checked={exportConfig.includeDeletedReports}
+              onCheckedChange={(checked) => setExportConfig({...exportConfig, includeDeletedReports: checked})}
+            />
+            <label htmlFor="include-deleted" className="text-sm font-medium">
+              Include Deleted Reports in Export
+            </label>
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium mb-1 block">Export Format</label>
+            <select 
+              className="w-full rounded-md border border-input bg-background px-3 py-2"
+              value={exportConfig.exportFormat}
+              onChange={(e) => setExportConfig({...exportConfig, exportFormat: e.target.value})}
+            >
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="auto-export"
+              checked={exportConfig.autoExportEnabled}
+              onCheckedChange={(checked) => setExportConfig({...exportConfig, autoExportEnabled: checked})}
+            />
+            <label htmlFor="auto-export" className="text-sm font-medium">
+              Enable Automatic Exports
+            </label>
+          </div>
+          
+          {exportConfig.autoExportEnabled && (
+            <div>
+              <label className="text-sm font-medium mb-1 block">Auto Export Interval (hours)</label>
+              <Input 
+                type="number"
+                value={exportConfig.autoExportInterval.toString()} 
+                onChange={(e) => setExportConfig({...exportConfig, autoExportInterval: parseInt(e.target.value) || 24})}
+              />
+            </div>
+          )}
+          
+          <Button onClick={handleExportData} className="w-full">
+            <Download className="w-4 h-4 mr-2" />
+            Export Data Now
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const [influencers, setInfluencers] = useState<InfluencerData[]>([]);
   const [reports, setReports] = useState<RiskReport[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('influencers');
 
-  // Load data
   useEffect(() => {
     loadData();
   }, []);
@@ -130,7 +373,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     setReports(getAllReports());
   };
 
-  // Handle influencer deletion
   const handleDeleteInfluencer = (handle: string) => {
     if (window.confirm(`Are you sure you want to delete influencer @${handle}?`)) {
       if (deleteInfluencer(handle)) {
@@ -149,7 +391,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     }
   };
 
-  // Handle report deletion
   const handleDeleteReport = (id: string) => {
     if (window.confirm("Are you sure you want to delete this report?")) {
       if (deleteReport(id)) {
@@ -168,19 +409,16 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     }
   };
 
-  // Filter function for influencers
   const filteredInfluencers = influencers.filter(influencer => 
     influencer.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
     influencer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Filter function for reports
   const filteredReports = reports.filter(report => 
     report.influencerData.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
     report.influencerData.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Format date
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString('en-US', {
       month: 'short',
@@ -191,7 +429,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
     });
   };
 
-  // Get risk level badge
   const getRiskBadge = (score: number) => {
     if (score < 30) {
       return <Badge className="bg-green-500">Low Risk</Badge>;
@@ -216,7 +453,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
         </Button>
       </div>
       
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -227,7 +463,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
         />
       </div>
       
-      {/* Database stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-4 border-primary/30">
           <div className="flex items-center space-x-2">
@@ -268,11 +503,11 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
         </Card>
       </div>
       
-      {/* Main content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full grid grid-cols-2">
+        <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="influencers">Influencers</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="configuration">Configuration</TabsTrigger>
         </TabsList>
         
         <TabsContent value="influencers" className="space-y-4">
@@ -367,18 +602,20 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
             </Table>
           </Card>
         </TabsContent>
+        
+        <TabsContent value="configuration">
+          <ConfigurationTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-// Main Admin page component
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already authenticated
     const authStatus = localStorage.getItem('admin_authenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
@@ -398,7 +635,6 @@ const Admin = () => {
       description: "You have been logged out of the admin panel",
     });
     
-    // Redirect to home page
     navigate('/');
   };
 
