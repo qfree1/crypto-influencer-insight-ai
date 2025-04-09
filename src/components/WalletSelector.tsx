@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -37,10 +36,10 @@ const WalletSelector = ({ web3State, setWeb3State, isConnecting, setIsConnecting
   
   const wallets = getAvailableWalletProviders().map(wallet => ({
     ...wallet,
-    icon: wallet.provider === 'metamask' ? walletImages.metamask :
-          wallet.provider === 'trustwallet' ? walletImages.trustwallet :
-          wallet.provider === 'walletconnect' ? walletImages.walletconnect :
-          wallet.provider === 'binance' ? walletImages.binance :
+    icon: wallet.provider === WalletProvider.METAMASK ? walletImages.metamask :
+          wallet.provider === WalletProvider.TRUST ? walletImages.trustwallet :
+          wallet.provider === WalletProvider.WALLETCONNECT ? walletImages.walletconnect :
+          wallet.provider === WalletProvider.BINANCE ? walletImages.binance :
           wallet.icon
   }));
 
