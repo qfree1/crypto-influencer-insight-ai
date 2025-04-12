@@ -5,15 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Switch } from '@/components/ui/switch';
-import { 
-  Shield, 
-  AlertTriangle, 
-  LogOut,
-  UserCheck,
-  Settings,
-  Save,
-} from 'lucide-react';
+import { Shield, AlertTriangle, LogOut, UserCheck, Settings, Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { authenticateAdmin } from '@/services/databaseService';
 
@@ -24,8 +16,6 @@ const API_CONFIG_KEY = 'api_configuration';
 const DEFAULT_API_CONFIG = {
   apiEndpoint: 'https://api.example.com/influencer-analysis',
   apiKey: '',
-  useRealApi: false,
-  rateLimit: 10,
   timeout: 30000,
 };
 
@@ -153,7 +143,11 @@ const ApiConfigPanel = ({ onLogout }: { onLogout: () => void }) => {
     <div className="container mx-auto py-6 max-w-3xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
-          <Shield className="w-6 h-6 text-primary" />
+          <img 
+            src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+            alt="Web3D Logo" 
+            className="w-6 h-6 mr-2" 
+          />
           <h1 className="text-2xl font-bold text-gradient">API Configuration</h1>
         </div>
         
@@ -201,54 +195,38 @@ const ApiConfigPanel = ({ onLogout }: { onLogout: () => void }) => {
             </p>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-1 block">Rate Limit (requests per minute)</label>
-              <Input 
-                type="number"
-                value={apiConfig.rateLimit.toString()} 
-                onChange={(e) => setApiConfig({...apiConfig, rateLimit: parseInt(e.target.value) || 10})}
-              />
-              <p className="text-sm text-muted-foreground mt-1">
-                Maximum number of API requests per minute
-              </p>
-            </div>
-            
-            <div className="flex-1">
-              <label className="text-sm font-medium mb-1 block">Timeout (ms)</label>
-              <Input 
-                type="number"
-                value={apiConfig.timeout.toString()} 
-                onChange={(e) => setApiConfig({...apiConfig, timeout: parseInt(e.target.value) || 30000})}
-              />
-              <p className="text-sm text-muted-foreground mt-1">
-                How long to wait for API response before timing out
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2 pt-2">
-            <Switch 
-              id="use-real-api"
-              checked={apiConfig.useRealApi}
-              onCheckedChange={(checked) => setApiConfig({...apiConfig, useRealApi: checked})}
+          <div>
+            <label className="text-sm font-medium mb-1 block">Timeout (ms)</label>
+            <Input 
+              type="number"
+              value={apiConfig.timeout.toString()} 
+              onChange={(e) => setApiConfig({...apiConfig, timeout: parseInt(e.target.value) || 30000})}
             />
-            <label htmlFor="use-real-api" className="text-sm font-medium">
-              Use Real API (instead of mock data)
-            </label>
+            <p className="text-sm text-muted-foreground mt-1">
+              How long to wait for API response before timing out
+            </p>
           </div>
           
           <div className="bg-muted/30 p-4 rounded-md mt-4">
-            <h3 className="font-medium mb-2">How to Get a Real API</h3>
+            <h3 className="font-medium mb-2 flex items-center">
+              <img 
+                src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+                alt="Web3D Logo" 
+                className="w-5 h-5 mr-2" 
+              />
+              API Integration Guide
+            </h3>
             <p className="text-sm text-muted-foreground">
-              To use real data instead of mock data, you need a third-party API service that provides 
-              influencer analysis. Options include social media analytics APIs (Twitter/X API), 
-              blockchain explorer APIs (Etherscan, Moralis, Alchemy), or specialized influencer 
-              analytics platforms.
+              To use real data for influencer analysis, you need to connect to external APIs that provide:
             </p>
+            <ul className="list-disc pl-5 mt-2 text-sm text-muted-foreground space-y-1">
+              <li>Social media metrics (followers, engagement rates)</li>
+              <li>Blockchain transaction data (wallet addresses, token movements)</li>
+              <li>Risk assessment algorithms</li>
+            </ul>
             <p className="text-sm text-muted-foreground mt-2">
-              After obtaining API credentials from your chosen service, configure them here and 
-              enable "Use Real API" to start using live data in your analysis.
+              Recommended API providers: Moralis, Alchemy, Etherscan, Twitter API, or specialized crypto influencer
+              analysis platforms.
             </p>
           </div>
         </div>

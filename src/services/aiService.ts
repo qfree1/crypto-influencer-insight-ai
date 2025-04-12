@@ -1,6 +1,5 @@
 
 import { RiskReport } from '@/types';
-import { analyzeInfluencer } from './analysisService';
 import { getReportsByInfluencer, getAllReports, saveReport } from './databaseService';
 import { toast } from '@/hooks/use-toast';
 
@@ -22,8 +21,6 @@ const getApiConfig = () => {
   return {
     apiEndpoint: 'https://api.example.com/influencer-analysis',
     apiKey: '',
-    useRealApi: false,
-    rateLimit: 10,
     timeout: 30000,
   };
 };
@@ -34,11 +31,15 @@ const getApiConfig = () => {
 const callExternalApi = async (handle: string): Promise<RiskReport> => {
   const apiConfig = getApiConfig();
   
+  if (!apiConfig.apiKey) {
+    throw new Error('API key is not configured. Please set up your API key in the admin panel.');
+  }
+  
   try {
     // Log API request
     console.log(`Calling external API at ${apiConfig.apiEndpoint} for handle: ${handle}`);
     
-    // Respect rate limits and timeouts from configuration
+    // Respect timeouts from configuration
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), apiConfig.timeout);
     
@@ -65,7 +66,7 @@ const callExternalApi = async (handle: string): Promise<RiskReport> => {
     
     // Map the external API response to our internal RiskReport format
     return {
-      id: `external-${Date.now()}`,
+      id: `report-${Date.now()}`,
       influencerData: {
         handle: data.handle || handle,
         name: data.name || handle,
@@ -111,7 +112,7 @@ const callExternalApi = async (handle: string): Promise<RiskReport> => {
 
 /**
  * Generate a report for an influencer
- * Uses real analysis service or configured external API based on settings
+ * Uses real API to fetch influencer data
  */
 export const generateReport = async (handle: string): Promise<RiskReport> => {
   try {
@@ -121,34 +122,23 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     // Get API configuration
     const apiConfig = getApiConfig();
     
-    if (apiConfig.useRealApi && apiConfig.apiKey) {
-      try {
-        console.log(`Using real API endpoint: ${apiConfig.apiEndpoint}`);
-        // Call the external API
-        const report = await callExternalApi(handle);
-        
-        // Save the report to history
-        saveReport(report);
-        
-        return report;
-      } catch (error) {
-        console.error('External API failed, falling back to local analysis:', error);
-        toast({
-          title: "API Error",
-          description: "External API failed. Falling back to local analysis.",
-          variant: "destructive",
-        });
-        
-        // Fall back to local analysis if API fails
-        const report = await analyzeInfluencer(handle);
-        return report;
-      }
-    } else {
-      // Call our local analysis service
-      console.log('Using local analysis service');
-      const report = await analyzeInfluencer(handle);
-      return report;
+    if (!apiConfig.apiKey) {
+      toast({
+        title: "API Not Configured",
+        description: "Please set up your API key in the Admin Panel",
+        variant: "destructive",
+      });
+      throw new Error("API key not configured. Please visit the Admin Panel to set up your API key.");
     }
+    
+    // Call the external API
+    console.log(`Using API endpoint: ${apiConfig.apiEndpoint}`);
+    const report = await callExternalApi(handle);
+    
+    // Save the report to history
+    saveReport(report);
+    
+    return report;
   } catch (error) {
     console.error('Error generating report:', error);
     throw error;

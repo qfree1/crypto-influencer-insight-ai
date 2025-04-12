@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,6 +57,11 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
           setIsSubmitting(false);
           return;
         }
+        
+        toast({
+          title: "Payment Successful",
+          description: "Payment processed successfully",
+        });
       }
 
       onSubmit(sanitizedHandle);
@@ -67,8 +73,8 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
     }
   };
 
-  // For demo purposes, add some example handles
-  const exampleHandles = ['CryptoXKing', 'CryptoGem', 'TokenPump'];
+  // Real influencer examples (popular crypto influencers)
+  const exampleHandles = ['VitalikButerin', 'SBF_FTX', 'cz_binance'];
 
   return (
     <Card className="crypto-card w-full mx-auto">
@@ -94,7 +100,7 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
             </div>
             <Input
               type="text"
-              placeholder="Enter Twitter/X handle (e.g. @CryptoExpert)"
+              placeholder="Enter Twitter/X handle (e.g. @VitalikButerin)"
               value={handle}
               onChange={handleInputChange}
               className="pl-10"
