@@ -1,10 +1,7 @@
-
 import { RiskReport } from '@/types';
 import { getReportsByInfluencer, getAllReports, saveReport } from './databaseService';
 import { toast } from '@/hooks/use-toast';
-
-// Configuration storage key
-const API_CONFIG_KEY = 'api_configuration';
+import { API_CONFIG_KEY, DEFAULT_API_CONFIG } from '@/constants/apiConfig';
 
 // Get API configuration from localStorage
 const getApiConfig = () => {
@@ -18,11 +15,7 @@ const getApiConfig = () => {
   }
   
   // Default configuration if none is found
-  return {
-    apiEndpoint: 'https://api.example.com/influencer-analysis',
-    apiKey: '',
-    timeout: 30000,
-  };
+  return DEFAULT_API_CONFIG;
 };
 
 /**
