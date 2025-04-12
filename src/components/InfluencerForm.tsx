@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, AlertCircle, Coins } from 'lucide-react';
+import { Search, AlertCircle } from 'lucide-react';
 import { Web3State } from '@/types';
 import { markFreeReportUsed, payForReport } from '@/services/web3Service';
 import { toast } from '@/hooks/use-toast';
@@ -110,7 +109,11 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
           )}
 
           <div className="p-3 rounded-lg bg-muted/40 text-sm flex items-center gap-2">
-            <Coins className="h-4 w-4 text-primary" />
+            <img 
+              src="/lovable-uploads/cdb1d1dd-f192-4146-a926-a4904db9dd15.png" 
+              alt="Web3D Logo" 
+              className="h-4 w-4 text-primary" 
+            />
             {!web3State.freeReportUsed ? (
               <span>You have 1 free analysis available</span>
             ) : web3State.hasTokens ? (
