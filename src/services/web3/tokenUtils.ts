@@ -1,4 +1,6 @@
 
+import { getBscApiKey, getBscExplorerUrl } from '../keyManagementService';
+
 /**
  * Utility functions for token handling and formatting
  */
@@ -39,5 +41,5 @@ export const WEB3D_TOKEN_ABI = [
 // BSC network configuration
 export const BSC_RPC_URL = 'https://bsc-dataseed1.binance.org/';
 export const BSC_CHAIN_ID = 56;
-export const BSC_EXPLORER_API_KEY = 'HQTVUMCYHQRY11C7J38BADKXUF9SQC89EU';
-export const BSC_EXPLORER_URL = 'https://api.bscscan.com/api';
+export const BSC_EXPLORER_API_KEY = getBscApiKey();
+export const BSC_EXPLORER_URL = getBscExplorerUrl();

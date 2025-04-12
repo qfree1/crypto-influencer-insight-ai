@@ -11,7 +11,8 @@ import LandingPage from "./pages/LandingPage";
 import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { API_CONFIG_KEY, DEFAULT_API_CONFIG } from "./constants/apiConfig";
+import { saveApiConfig } from "./services/keyManagementService";
+import { DEFAULT_API_CONFIG } from "./constants/apiConfig";
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -26,11 +27,9 @@ const queryClient = new QueryClient({
 const App = () => {
   // Initialize API configuration if not exists
   useEffect(() => {
-    const storedConfig = localStorage.getItem(API_CONFIG_KEY);
-    if (!storedConfig) {
-      localStorage.setItem(API_CONFIG_KEY, JSON.stringify(DEFAULT_API_CONFIG));
-      console.log("API configuration initialized with defaults");
-    }
+    // Initialize secure API configuration
+    saveApiConfig(DEFAULT_API_CONFIG);
+    console.log("API configuration initialized with defaults");
   }, []);
 
   return (

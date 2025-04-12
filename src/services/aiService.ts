@@ -2,7 +2,7 @@
 import { RiskReport } from '@/types';
 import { getReportsByInfluencer, getAllReports, saveReport } from './databaseService';
 import { toast } from '@/hooks/use-toast';
-import { API_CONFIG_KEY, DEFAULT_API_CONFIG } from '@/constants/apiConfig';
+import { getApiConfig } from './keyManagementService';
 
 /**
  * Generate a report for an influencer
@@ -13,9 +13,8 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     // Log the request
     console.log(`Generating report for ${handle}`);
     
-    // Get API configuration from localStorage or use defaults
-    const storedConfig = localStorage.getItem(API_CONFIG_KEY);
-    const apiConfig = storedConfig ? JSON.parse(storedConfig) : DEFAULT_API_CONFIG;
+    // Get API configuration securely
+    const apiConfig = getApiConfig();
     
     // Make request to backend API
     const response = await fetch(`${apiConfig.apiEndpoint}/analyze`, {
