@@ -11,7 +11,7 @@ import LandingPage from "./pages/LandingPage";
 import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { saveApiConfig } from "./services/keyManagementService";
+import { saveApiConfig, initializeOpenAiConfig } from "./services/keyManagementService";
 import { DEFAULT_API_CONFIG } from "./constants/apiConfig";
 
 // Create React Query client
@@ -30,6 +30,10 @@ const App = () => {
     // Initialize secure API configuration
     saveApiConfig(DEFAULT_API_CONFIG);
     console.log("API configuration initialized with defaults");
+    
+    // Initialize OpenAI configuration
+    initializeOpenAiConfig();
+    console.log("OpenAI configuration initialized");
   }, []);
 
   return (

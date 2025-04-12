@@ -35,6 +35,10 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
     }
 
     setIsSubmitting(true);
+    toast({
+      title: "Analyzing Influencer",
+      description: `Starting analysis for @${sanitizedHandle}...`,
+    });
 
     try {
       // Check if user needs to pay
@@ -49,6 +53,10 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
           title: "Free Analysis Used",
           description: "You've used your one-time free analysis",
         });
+      } else if (web3State.freeReportUsed && !web3State.hasTokens) {
+        setError('You need WEB3D tokens for additional reports');
+        setIsSubmitting(false);
+        return;
       } else if (web3State.freeReportUsed) {
         // Pay for report with 1 token
         const success = await payForReport(web3State.address || '');
@@ -68,6 +76,11 @@ const InfluencerForm = ({ web3State, onSubmit, setWeb3State }: InfluencerFormPro
     } catch (error) {
       console.error('Error processing request:', error);
       setError('An error occurred. Please try again.');
+      toast({
+        title: "Error",
+        description: "An error occurred while processing your request",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

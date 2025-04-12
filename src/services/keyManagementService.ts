@@ -5,7 +5,8 @@ import {
   DEFAULT_API_CONFIG,
   OPENAI_CONFIG_KEY,
   DEFAULT_OPENAI_CONFIG,
-  BSC_CONFIG
+  BSC_CONFIG,
+  TWITTER_CONFIG
 } from '@/constants/apiConfig';
 
 /**
@@ -54,6 +55,20 @@ export const getBscExplorerUrl = () => {
 };
 
 /**
+ * Get Twitter API Bearer Token
+ */
+export const getTwitterBearerToken = () => {
+  return TWITTER_CONFIG.bearerToken;
+};
+
+/**
+ * Get Twitter API Key
+ */
+export const getTwitterApiKey = () => {
+  return DEFAULT_API_CONFIG.apiKey;
+};
+
+/**
  * Securely get OpenAI configuration
  */
 export const getOpenAiConfig = () => {
@@ -84,3 +99,23 @@ export const saveOpenAiConfig = (config: typeof DEFAULT_OPENAI_CONFIG) => {
   }
 };
 
+/**
+ * Initialize OpenAI with production key
+ */
+export const initializeOpenAiConfig = () => {
+  try {
+    // Only set if not already configured
+    const current = getOpenAiConfig();
+    if (!current.apiKey) {
+      saveOpenAiConfig({
+        ...DEFAULT_OPENAI_CONFIG,
+        apiKey: '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'
+      });
+      console.log('OpenAI API key initialized');
+    }
+    return true;
+  } catch (error) {
+    console.error('Error initializing OpenAI config:', error);
+    return false;
+  }
+};
