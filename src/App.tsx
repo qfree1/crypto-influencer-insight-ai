@@ -14,12 +14,13 @@ import Footer from "./components/Footer";
 import { saveApiConfig, initializeOpenAiConfig } from "./services/keyManagementService";
 import { DEFAULT_API_CONFIG } from "./constants/apiConfig";
 
-// Create React Query client
+// Create React Query client with improved error handling
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 2,
       refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes
     },
   },
 });
@@ -27,13 +28,17 @@ const queryClient = new QueryClient({
 const App = () => {
   // Initialize API configuration if not exists
   useEffect(() => {
-    // Initialize secure API configuration
-    saveApiConfig(DEFAULT_API_CONFIG);
-    console.log("API configuration initialized with defaults");
-    
-    // Initialize OpenAI configuration
-    initializeOpenAiConfig();
-    console.log("OpenAI configuration initialized");
+    try {
+      // Initialize secure API configuration
+      saveApiConfig(DEFAULT_API_CONFIG);
+      console.log("API configuration initialized with defaults");
+      
+      // Initialize OpenAI configuration
+      initializeOpenAiConfig();
+      console.log("OpenAI configuration initialized");
+    } catch (error) {
+      console.error("Error initializing configurations:", error);
+    }
   }, []);
 
   return (

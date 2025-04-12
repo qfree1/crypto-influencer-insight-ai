@@ -1,12 +1,19 @@
 
 import { getTwitterBearerToken, getTwitterApiKey } from './keyManagementService';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Fetch Twitter profile data
  */
 export const fetchTwitterProfile = async (handle: string) => {
   try {
+    console.log(`Fetching Twitter profile for: ${handle}`);
     const bearerToken = getTwitterBearerToken();
+    
+    if (!bearerToken) {
+      console.error('Twitter bearer token is missing');
+      return null;
+    }
     
     // Twitter API v2 endpoint for user lookup
     const response = await fetch(`https://api.twitter.com/2/users/by/username/${handle}?user.fields=profile_image_url,description,public_metrics`, {
@@ -16,12 +23,17 @@ export const fetchTwitterProfile = async (handle: string) => {
     });
     
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Twitter API error (${response.status}): ${errorText}`);
       throw new Error(`Twitter API error: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    console.log('Twitter profile data:', data);
+    return data;
   } catch (error) {
     console.error('Error fetching Twitter profile:', error);
+    // Don't show a toast here, let the caller handle it
     return null;
   }
 };
@@ -31,7 +43,13 @@ export const fetchTwitterProfile = async (handle: string) => {
  */
 export const fetchTwitterTimeline = async (userId: string, maxResults = 10) => {
   try {
+    console.log(`Fetching Twitter timeline for user ID: ${userId}`);
     const bearerToken = getTwitterBearerToken();
+    
+    if (!bearerToken) {
+      console.error('Twitter bearer token is missing');
+      return null;
+    }
     
     // Twitter API v2 endpoint for user tweets
     const response = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?max_results=${maxResults}&tweet.fields=public_metrics,created_at`, {
@@ -41,12 +59,17 @@ export const fetchTwitterTimeline = async (userId: string, maxResults = 10) => {
     });
     
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Twitter API error (${response.status}): ${errorText}`);
       throw new Error(`Twitter API error: ${response.status}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    console.log('Twitter timeline data:', data);
+    return data;
   } catch (error) {
     console.error('Error fetching Twitter timeline:', error);
+    // Don't show a toast here, let the caller handle it
     return null;
   }
 };
@@ -56,20 +79,25 @@ export const fetchTwitterTimeline = async (userId: string, maxResults = 10) => {
  */
 export const analyzeTwitterEngagement = async (handle: string) => {
   try {
+    console.log(`Analyzing Twitter engagement for: ${handle}`);
+    
     // First get the user profile to get the user ID
     const profileData = await fetchTwitterProfile(handle);
     
     if (!profileData || !profileData.data) {
-      throw new Error('Failed to fetch Twitter profile');
+      console.log('No profile data received, using synthetic data');
+      return null;
     }
     
     const userId = profileData.data.id;
+    console.log(`User ID for ${handle}: ${userId}`);
     
     // Then get the user's tweets
     const timelineData = await fetchTwitterTimeline(userId, 50);
     
     if (!timelineData || !timelineData.data) {
-      throw new Error('Failed to fetch Twitter timeline');
+      console.log('No timeline data received, using synthetic data');
+      return null;
     }
     
     // Calculate average engagement
@@ -85,13 +113,16 @@ export const analyzeTwitterEngagement = async (handle: string) => {
     // Engagement rate as a percentage
     const engagementRate = followers > 0 ? (averageEngagement / followers) * 100 : 0;
     
-    return {
+    const result = {
       profile: profileData.data,
       engagement: {
         averageEngagement,
         engagementRate: parseFloat(engagementRate.toFixed(2)),
       }
     };
+    
+    console.log('Twitter engagement analysis complete:', result);
+    return result;
   } catch (error) {
     console.error('Error analyzing Twitter engagement:', error);
     return null;

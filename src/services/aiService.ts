@@ -6,7 +6,7 @@ import { getApiConfig, getOpenAiConfig } from './keyManagementService';
 
 /**
  * Generate a report for an influencer
- * Uses real backend API for analysis
+ * Uses real backend API for analysis, with fallback to local analysis
  */
 export const generateReport = async (handle: string): Promise<RiskReport> => {
   try {
@@ -16,8 +16,24 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     // Get API configuration securely
     const apiConfig = getApiConfig();
     
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Development mode detected, using local analysis');
+      const { analyzeInfluencer } = await import('./analysisService');
+      const report = await analyzeInfluencer(handle);
+      saveReport(report);
+      return report;
+    }
+    
     // Make request to backend API
-    const response = await fetch(`${apiConfig.apiEndpoint}/analyze`, {
+    console.log(`Making request to ${apiConfig.apiEndpoint}/analyze with handle: ${handle}`);
+    
+    // Create a timeout promise
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Request timed out')), apiConfig.timeout);
+    });
+    
+    // Create the fetch promise
+    const fetchPromise = fetch(`${apiConfig.apiEndpoint}/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,13 +46,19 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
       })
     });
     
+    // Race the two promises
+    const response = await Promise.race([fetchPromise, timeoutPromise]);
+    
+    // Check if the response is ok
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
       console.error('API error:', errorData);
       throw new Error(`API error: ${response.status} - ${errorData.message || response.statusText}`);
     }
     
+    // Parse the response
     const report = await response.json();
+    console.log('Report generated successfully:', report);
     
     // Save the report to history
     saveReport(report);
@@ -45,22 +67,25 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
   } catch (error) {
     console.error('Error generating report:', error);
     
-    // Fallback to local analysis for development purposes
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Using fallback local analysis for development');
-      const { analyzeInfluencer } = await import('./analysisService');
+    // Fallback to local analysis
+    console.warn('Using fallback local analysis');
+    const { analyzeInfluencer } = await import('./analysisService');
+    
+    try {
       const report = await analyzeInfluencer(handle);
       saveReport(report);
       return report;
+    } catch (innerError) {
+      console.error('Error in fallback analysis:', innerError);
+      
+      toast({
+        title: "Analysis Failed",
+        description: "There was an error generating the report. Please try again later.",
+        variant: "destructive",
+      });
+      
+      throw new Error('Failed to generate report, even with fallback');
     }
-    
-    toast({
-      title: "Analysis Failed",
-      description: "There was an error generating the report. Please try again later.",
-      variant: "destructive",
-    });
-    
-    throw error;
   }
 };
 
@@ -105,8 +130,11 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
     const openAiConfig = getOpenAiConfig();
     
     if (!openAiConfig.apiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.warn('OpenAI API key not configured');
+      return '';
     }
+    
+    console.log('Analyzing with OpenAI...');
     
     // Make request to OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -125,18 +153,13 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorData.message || response.statusText}`);
+      return '';
     }
     
     const data = await response.json();
     return data.choices[0]?.message?.content || '';
   } catch (error) {
     console.error('Error analyzing with OpenAI:', error);
-    toast({
-      title: "Analysis Failed",
-      description: "Could not complete the OpenAI analysis",
-      variant: "destructive",
-    });
-    throw error;
+    return '';
   }
 };
