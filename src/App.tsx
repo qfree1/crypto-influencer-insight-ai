@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,11 +11,28 @@ import LandingPage from "./pages/LandingPage";
 import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { API_CONFIG_KEY, DEFAULT_API_CONFIG } from "./constants/apiConfig";
 
 // Create React Query client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
+  // Initialize API configuration if not exists
+  useEffect(() => {
+    const storedConfig = localStorage.getItem(API_CONFIG_KEY);
+    if (!storedConfig) {
+      localStorage.setItem(API_CONFIG_KEY, JSON.stringify(DEFAULT_API_CONFIG));
+      console.log("API configuration initialized with defaults");
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
