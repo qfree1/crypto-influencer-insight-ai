@@ -5,16 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings, Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-
-// Configuration storage key
-const API_CONFIG_KEY = 'api_configuration';
-
-// Default API configuration
-const DEFAULT_API_CONFIG = {
-  apiEndpoint: 'https://api.example.com/influencer-analysis',
-  apiKey: '',
-  timeout: 30000,
-};
+import { API_CONFIG_KEY, DEFAULT_API_CONFIG } from '@/constants/apiConfig';
 
 interface ApiConfigPanelProps {
   onLogout: () => void;
