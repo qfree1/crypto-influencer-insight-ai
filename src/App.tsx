@@ -8,7 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
-import Admin from "./pages/Admin";
 import ParticleBackground from "./components/ParticleBackground";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -34,7 +33,6 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/analyze" element={<Index />} />
-                  <Route path="/admin" element={<Admin />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
