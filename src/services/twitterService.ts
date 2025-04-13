@@ -15,10 +15,16 @@ export const fetchTwitterProfile = async (handle: string) => {
       return null;
     }
     
+    // Use a proxy to avoid CORS issues in development
+    const baseUrl = process.env.NODE_ENV === 'development' 
+      ? 'https://cors-anywhere.herokuapp.com/https://api.twitter.com'
+      : 'https://api.twitter.com';
+    
     // Twitter API v2 endpoint for user lookup
-    const response = await fetch(`https://api.twitter.com/2/users/by/username/${handle}?user.fields=profile_image_url,description,public_metrics`, {
+    const response = await fetch(`${baseUrl}/2/users/by/username/${handle}?user.fields=profile_image_url,description,public_metrics`, {
       headers: {
-        'Authorization': `Bearer ${bearerToken}`
+        'Authorization': `Bearer ${bearerToken}`,
+        'Origin': window.location.origin
       }
     });
     
@@ -51,10 +57,16 @@ export const fetchTwitterTimeline = async (userId: string, maxResults = 10) => {
       return null;
     }
     
+    // Use a proxy to avoid CORS issues in development
+    const baseUrl = process.env.NODE_ENV === 'development' 
+      ? 'https://cors-anywhere.herokuapp.com/https://api.twitter.com'
+      : 'https://api.twitter.com';
+    
     // Twitter API v2 endpoint for user tweets
-    const response = await fetch(`https://api.twitter.com/2/users/${userId}/tweets?max_results=${maxResults}&tweet.fields=public_metrics,created_at`, {
+    const response = await fetch(`${baseUrl}/2/users/${userId}/tweets?max_results=${maxResults}&tweet.fields=public_metrics,created_at`, {
       headers: {
-        'Authorization': `Bearer ${bearerToken}`
+        'Authorization': `Bearer ${bearerToken}`,
+        'Origin': window.location.origin
       }
     });
     

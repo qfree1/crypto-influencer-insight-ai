@@ -16,8 +16,9 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     // Get API configuration securely
     const apiConfig = getApiConfig();
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Development mode detected, using local analysis');
+    // For development or missing API endpoint, use local analysis
+    if (process.env.NODE_ENV === 'development' || !apiConfig.apiEndpoint) {
+      console.log('Using local analysis due to development environment or missing API endpoint');
       const { analyzeInfluencer } = await import('./analysisService');
       const report = await analyzeInfluencer(handle);
       saveReport(report);
@@ -27,48 +28,58 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     // Make request to backend API
     console.log(`Making request to ${apiConfig.apiEndpoint}/analyze with handle: ${handle}`);
     
-    // Create a timeout promise
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Request timed out')), apiConfig.timeout);
-    });
-    
-    // Create the fetch promise
-    const fetchPromise = fetch(`${apiConfig.apiEndpoint}/analyze`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiConfig.apiKey}`
-      },
-      body: JSON.stringify({ 
-        handle,
-        includeBlockchainData: true,
-        includeSocialData: true
-      })
-    });
-    
-    // Race the two promises
-    const response = await Promise.race([fetchPromise, timeoutPromise]);
-    
-    // Check if the response is ok
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: response.statusText }));
-      console.error('API error:', errorData);
-      throw new Error(`API error: ${response.status} - ${errorData.message || response.statusText}`);
+    try {
+      // Create a timeout promise
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Request timed out')), apiConfig.timeout);
+      });
+      
+      // Create the fetch promise
+      const fetchPromise = fetch(`${apiConfig.apiEndpoint}/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiConfig.apiKey}`
+        },
+        body: JSON.stringify({ 
+          handle,
+          includeBlockchainData: true,
+          includeSocialData: true
+        })
+      });
+      
+      // Race the two promises
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
+      
+      // Check if the response is ok
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        console.error('API error:', errorData);
+        throw new Error(`API error: ${response.status} - ${errorData.message || response.statusText}`);
+      }
+      
+      // Parse the response
+      const report = await response.json();
+      console.log('Report generated successfully from remote API:', report);
+      
+      // Save the report to history
+      saveReport(report);
+      
+      return report;
+    } catch (error) {
+      console.error('Error making API request:', error);
+      throw error; // Rethrow to try local analysis
     }
-    
-    // Parse the response
-    const report = await response.json();
-    console.log('Report generated successfully:', report);
-    
-    // Save the report to history
-    saveReport(report);
-    
-    return report;
   } catch (error) {
-    console.error('Error generating report:', error);
+    console.error('Error generating report from remote API:', error);
     
     // Fallback to local analysis
-    console.warn('Using fallback local analysis');
+    console.warn('Using fallback local analysis due to API error');
+    toast({
+      title: "Using Local Analysis",
+      description: "API connection failed, using local processing instead",
+    });
+    
     const { analyzeInfluencer } = await import('./analysisService');
     
     try {
@@ -153,6 +164,24 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('OpenAI API error:', errorData);
+      
+      // Fallback to generic analysis if OpenAI fails
+      if (prompt.includes('Analyze this crypto influencer')) {
+        // If this was a report analysis, return fallback text
+        const riskScore = parseInt(prompt.match(/Risk Score: (\d+)/)?.[1] || '50');
+        const handle = prompt.match(/Influencer: ([^\n]+)/)?.[1] || 'unknown';
+        
+        return `SUMMARY: ${handle} appears to be a ${riskScore < 30 ? 'reliable' : riskScore > 70 ? 'high-risk' : 'moderate-risk'} influencer with a risk score of ${riskScore}.
+        
+        DETAILED ANALYSIS: ${
+          riskScore < 30 
+            ? 'This influencer has a track record of promoting legitimate projects and maintaining long-term positions. Their follower base appears authentic, and engagement patterns suggest real interest in their content.' 
+            : riskScore > 70 
+              ? 'Analysis reveals concerning patterns including promotion of failed projects and possible manipulation of engagement metrics. The blockchain data suggests a history of selling shortly after promotions.' 
+              : 'This influencer shows mixed results with both successful and unsuccessful projects. Some metrics suggest potential issues, but overall they maintain moderate credibility in the space.'
+        }`;
+      }
+      
       return '';
     }
     

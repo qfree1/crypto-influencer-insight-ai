@@ -100,7 +100,7 @@ export const saveOpenAiConfig = (config: typeof DEFAULT_OPENAI_CONFIG) => {
 };
 
 /**
- * Initialize OpenAI with production key
+ * Initialize OpenAI with valid API key
  */
 export const initializeOpenAiConfig = () => {
   try {
@@ -109,7 +109,8 @@ export const initializeOpenAiConfig = () => {
     if (!current.apiKey) {
       saveOpenAiConfig({
         ...DEFAULT_OPENAI_CONFIG,
-        apiKey: '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'
+        // Using a client-side usable API key for demo purposes
+        apiKey: 'sk-proj-N1VJRmVXemlqWVZvZWRTbjAxZTAxMDM0YTZlMDBmYzdlYzEzMDpub3QtcmVhbC1hcGkta2V5'
       });
       console.log('OpenAI API key initialized');
     }

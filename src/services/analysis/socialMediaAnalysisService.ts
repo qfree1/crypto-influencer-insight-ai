@@ -8,10 +8,12 @@ import { generateSyntheticTwitterData } from './syntheticDataService';
  */
 export const analyzeSocialMediaMetrics = async (handle: string): Promise<TwitterMetrics> => {
   try {
+    console.log(`Attempting to fetch real Twitter data for ${handle}`);
     // Try to get real Twitter data first
     const twitterData = await analyzeTwitterEngagement(handle);
     
     if (twitterData) {
+      console.log(`Successfully retrieved real Twitter data for ${handle}`);
       // We have real Twitter data!
       const { profile, engagement } = twitterData;
       
@@ -24,7 +26,7 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
         const isRugPull = (index / tokenCount * 100) < rugPullPercentage;
         
         return {
-          name: `TOKEN${Math.floor(Math.random() * 100)}`,
+          name: `${handle.toUpperCase().substring(0, 3)}_TOKEN${Math.floor(Math.random() * 100)}`,
           status: isRugPull ? 'rugpull' as const : Math.random() > 0.7 ? 'declined' as const : 'active' as const,
           performancePercentage: isRugPull 
             ? -1 * (Math.floor(Math.random() * 50) + 50)
@@ -45,10 +47,11 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
     }
     
     // Fallback to synthetic data
-    console.warn('Using synthetic Twitter data');
+    console.warn('Unable to fetch real Twitter data. Using synthetic data for', handle);
     return generateSyntheticTwitterData(handle);
   } catch (error) {
     console.error('Error analyzing social media metrics:', error);
+    console.warn('Falling back to synthetic Twitter data due to error');
     return generateSyntheticTwitterData(handle);
   }
 };
