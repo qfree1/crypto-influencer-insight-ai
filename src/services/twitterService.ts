@@ -1,6 +1,7 @@
 
 import { getTwitterBearerToken, getTwitterApiKey } from './keyManagementService';
 import { toast } from '@/hooks/use-toast';
+import { CORS_PROXY } from '@/constants/apiConfig';
 
 /**
  * Fetch Twitter profile data
@@ -15,13 +16,15 @@ export const fetchTwitterProfile = async (handle: string) => {
       return null;
     }
     
+    // Clean up handle to ensure it's just the username
+    const cleanHandle = handle.replace(/https?:\/\/(www\.)?(twitter|x)\.com\//, '').split('?')[0].split('/')[0];
+    console.log(`Cleaned handle: ${cleanHandle}`);
+    
     // Use a proxy to avoid CORS issues in development
-    const baseUrl = process.env.NODE_ENV === 'development' 
-      ? 'https://cors-anywhere.herokuapp.com/https://api.twitter.com'
-      : 'https://api.twitter.com';
+    const baseUrl = CORS_PROXY ? `${CORS_PROXY}https://api.twitter.com` : 'https://api.twitter.com';
     
     // Twitter API v2 endpoint for user lookup
-    const response = await fetch(`${baseUrl}/2/users/by/username/${handle}?user.fields=profile_image_url,description,public_metrics`, {
+    const response = await fetch(`${baseUrl}/2/users/by/username/${cleanHandle}?user.fields=profile_image_url,description,public_metrics`, {
       headers: {
         'Authorization': `Bearer ${bearerToken}`,
         'Origin': window.location.origin
@@ -58,9 +61,7 @@ export const fetchTwitterTimeline = async (userId: string, maxResults = 10) => {
     }
     
     // Use a proxy to avoid CORS issues in development
-    const baseUrl = process.env.NODE_ENV === 'development' 
-      ? 'https://cors-anywhere.herokuapp.com/https://api.twitter.com'
-      : 'https://api.twitter.com';
+    const baseUrl = CORS_PROXY ? `${CORS_PROXY}https://api.twitter.com` : 'https://api.twitter.com';
     
     // Twitter API v2 endpoint for user tweets
     const response = await fetch(`${baseUrl}/2/users/${userId}/tweets?max_results=${maxResults}&tweet.fields=public_metrics,created_at`, {

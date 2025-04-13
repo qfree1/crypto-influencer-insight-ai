@@ -2,6 +2,7 @@
 import { TwitterMetrics } from '@/types';
 import { analyzeTwitterEngagement } from '../twitterService';
 import { generateSyntheticTwitterData } from './syntheticDataService';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Analyze social media metrics for a given handle
@@ -14,6 +15,11 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
     
     if (twitterData) {
       console.log(`Successfully retrieved real Twitter data for ${handle}`);
+      toast({
+        title: "Real Data Fetched",
+        description: "Successfully connected to Twitter API",
+      });
+      
       // We have real Twitter data!
       const { profile, engagement } = twitterData;
       
@@ -48,10 +54,19 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
     
     // Fallback to synthetic data
     console.warn('Unable to fetch real Twitter data. Using synthetic data for', handle);
+    toast({
+      title: "Using Demo Data",
+      description: "Could not access Twitter API, using demonstration data instead",
+    });
     return generateSyntheticTwitterData(handle);
   } catch (error) {
     console.error('Error analyzing social media metrics:', error);
     console.warn('Falling back to synthetic Twitter data due to error');
+    toast({
+      title: "Using Demo Data",
+      description: "Error accessing Twitter API, using demonstration data instead",
+      variant: "destructive",
+    });
     return generateSyntheticTwitterData(handle);
   }
 };

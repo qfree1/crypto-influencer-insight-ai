@@ -17,8 +17,8 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     const apiConfig = getApiConfig();
     
     // For development or missing API endpoint, use local analysis
-    if (process.env.NODE_ENV === 'development' || !apiConfig.apiEndpoint) {
-      console.log('Using local analysis due to development environment or missing API endpoint');
+    if (!apiConfig.apiEndpoint) {
+      console.log('Using local analysis due to missing API endpoint');
       const { analyzeInfluencer } = await import('./analysisService');
       const report = await analyzeInfluencer(handle);
       saveReport(report);
