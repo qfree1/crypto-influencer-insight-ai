@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, Save, Twitter, Blockchain, Bot } from 'lucide-react';
+import { LogOut, Settings, Save, Twitter, Database, Bot } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { API_CONFIG_KEY, DEFAULT_API_CONFIG, TWITTER_CONFIG, BSC_CONFIG, OPENAI_CONFIG_KEY, DEFAULT_OPENAI_CONFIG } from '@/constants/apiConfig';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,7 +25,6 @@ const ApiConfigPanel = ({ onLogout }: ApiConfigPanelProps) => {
         setApiConfig(JSON.parse(savedApiConfig));
       }
       
-      // Load OpenAI config
       const savedOpenAiConfig = getOpenAiConfig();
       if (savedOpenAiConfig) {
         setOpenAiConfig(savedOpenAiConfig);
@@ -38,13 +36,10 @@ const ApiConfigPanel = ({ onLogout }: ApiConfigPanelProps) => {
 
   const saveConfigurations = () => {
     try {
-      // Save API config
       saveApiConfig(apiConfig);
       
-      // Save OpenAI config
       saveOpenAiConfig(openAiConfig);
       
-      // Update local storage for Twitter and BSC configs
       localStorage.setItem('twitter_config', JSON.stringify(twitterConfig));
       localStorage.setItem('bsc_config', JSON.stringify(bscConfig));
       
