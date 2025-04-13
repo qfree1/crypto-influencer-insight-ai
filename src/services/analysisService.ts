@@ -9,9 +9,9 @@ import { calculateRiskScore, generateAnalysisSummary } from './analysis/reportGe
 /**
  * Main analysis function to analyze an influencer
  */
-export const analyzeInfluencer = async (handle: string): Promise<RiskReport> => {
+export const analyzeInfluencer = async (handle: string, platform: string = 'x'): Promise<RiskReport> => {
   try {
-    console.log(`Analyzing influencer: ${handle}`);
+    console.log(`Analyzing influencer: ${handle} on ${platform}`);
     toast({
       title: "Analysis Started",
       description: "Gathering blockchain and social media data...",
@@ -29,6 +29,7 @@ export const analyzeInfluencer = async (handle: string): Promise<RiskReport> => 
         handle: normalizedHandle,
         name: `${normalizedHandle.charAt(0).toUpperCase() + normalizedHandle.slice(1)}`,
         profileImage: `https://placehold.co/100x100/6D28D9/FFFFFF/?text=${normalizedHandle.substring(0, 2).toUpperCase()}`,
+        platform: platform
       };
       saveInfluencer(influencerData);
     }
@@ -38,10 +39,10 @@ export const analyzeInfluencer = async (handle: string): Promise<RiskReport> => 
     
     // Perform analysis
     toast({
-      title: "Analyzing Social Media",
-      description: "Evaluating Twitter/X metrics and history...",
+      title: `Analyzing ${getPlatformName(platform)}`,
+      description: `Evaluating ${getPlatformName(platform)} metrics and history...`,
     });
-    const twitterMetrics = await analyzeSocialMediaMetrics(normalizedHandle);
+    const twitterMetrics = await analyzeSocialMediaMetrics(normalizedHandle, platform);
     
     toast({
       title: "Analyzing Blockchain",
@@ -61,19 +62,24 @@ export const analyzeInfluencer = async (handle: string): Promise<RiskReport> => 
       riskScore, 
       normalizedHandle, 
       blockchainData, 
-      twitterMetrics
+      twitterMetrics,
+      platform
     );
     
     // Create the report
     const report: RiskReport = {
-      id: `${normalizedHandle}-${Date.now()}`,
-      influencerData,
+      id: `${normalizedHandle}-${platform}-${Date.now()}`,
+      influencerData: {
+        ...influencerData,
+        platform
+      },
       twitterMetrics,
       blockchainData,
       riskScore,
       summary,
       detailedAnalysis,
       timestamp: Date.now(),
+      platform
     };
     
     // Save the report
@@ -95,5 +101,15 @@ export const analyzeInfluencer = async (handle: string): Promise<RiskReport> => 
     });
     
     throw error;
+  }
+};
+
+// Helper function to get platform display name
+const getPlatformName = (platform: string): string => {
+  switch(platform) {
+    case 'x': return 'Twitter/X';
+    case 'instagram': return 'Instagram';
+    case 'telegram': return 'Telegram';
+    default: return 'Social Media';
   }
 };

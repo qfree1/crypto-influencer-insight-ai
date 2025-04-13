@@ -7,9 +7,20 @@ import { toast } from '@/hooks/use-toast';
 /**
  * Analyze social media metrics for a given handle
  */
-export const analyzeSocialMediaMetrics = async (handle: string): Promise<TwitterMetrics> => {
+export const analyzeSocialMediaMetrics = async (handle: string, platform: string = 'x'): Promise<TwitterMetrics> => {
   try {
-    console.log(`Attempting to fetch real Twitter data for ${handle}`);
+    console.log(`Attempting to fetch real ${platform} data for ${handle}`);
+    
+    // For platforms other than Twitter/X, we currently only have synthetic data
+    if (platform !== 'x') {
+      console.log(`Using synthetic data for ${platform} as real API is not connected`);
+      toast({
+        title: `Using Demo Data for ${getPlatformName(platform)}`,
+        description: `No ${getPlatformName(platform)} API connected, using demonstration data instead`,
+      });
+      return generateSyntheticTwitterData(handle, platform);
+    }
+    
     // Try to get real Twitter data first
     const twitterData = await analyzeTwitterEngagement(handle);
     
@@ -48,7 +59,8 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
         followers: profile.public_metrics?.followers_count || 5000,
         realFollowerPercentage,
         engagementRate: engagement.engagementRate,
-        promotedTokens: tokens
+        promotedTokens: tokens,
+        platform: 'x'
       };
     }
     
@@ -58,15 +70,25 @@ export const analyzeSocialMediaMetrics = async (handle: string): Promise<Twitter
       title: "Using Demo Data",
       description: "Could not access Twitter API, using demonstration data instead",
     });
-    return generateSyntheticTwitterData(handle);
+    return generateSyntheticTwitterData(handle, platform);
   } catch (error) {
-    console.error('Error analyzing social media metrics:', error);
-    console.warn('Falling back to synthetic Twitter data due to error');
+    console.error(`Error analyzing ${platform} metrics:`, error);
+    console.warn(`Falling back to synthetic ${platform} data due to error`);
     toast({
       title: "Using Demo Data",
-      description: "Error accessing Twitter API, using demonstration data instead",
+      description: `Error accessing ${getPlatformName(platform)} API, using demonstration data instead`,
       variant: "destructive",
     });
-    return generateSyntheticTwitterData(handle);
+    return generateSyntheticTwitterData(handle, platform);
+  }
+};
+
+// Helper function to get platform display name
+const getPlatformName = (platform: string): string => {
+  switch(platform) {
+    case 'x': return 'Twitter/X';
+    case 'instagram': return 'Instagram';
+    case 'telegram': return 'Telegram';
+    default: return 'Social Media';
   }
 };

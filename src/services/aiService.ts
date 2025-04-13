@@ -8,10 +8,10 @@ import { getApiConfig, getOpenAiConfig } from './keyManagementService';
  * Generate a report for an influencer
  * Uses real backend API for analysis, with fallback to local analysis
  */
-export const generateReport = async (handle: string): Promise<RiskReport> => {
+export const generateReport = async (handle: string, platform: string = 'x'): Promise<RiskReport> => {
   try {
     // Log the request
-    console.log(`Generating report for ${handle}`);
+    console.log(`Generating report for ${handle} on ${platform}`);
     
     // Get API configuration securely
     const apiConfig = getApiConfig();
@@ -20,13 +20,13 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     if (!apiConfig.apiEndpoint) {
       console.log('Using local analysis due to missing API endpoint');
       const { analyzeInfluencer } = await import('./analysisService');
-      const report = await analyzeInfluencer(handle);
+      const report = await analyzeInfluencer(handle, platform);
       saveReport(report);
       return report;
     }
     
     // Make request to backend API
-    console.log(`Making request to ${apiConfig.apiEndpoint}/analyze with handle: ${handle}`);
+    console.log(`Making request to ${apiConfig.apiEndpoint}/analyze with handle: ${handle}, platform: ${platform}`);
     
     try {
       // Create a timeout promise
@@ -43,6 +43,7 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
         },
         body: JSON.stringify({ 
           handle,
+          platform,
           includeBlockchainData: true,
           includeSocialData: true
         })
@@ -83,7 +84,7 @@ export const generateReport = async (handle: string): Promise<RiskReport> => {
     const { analyzeInfluencer } = await import('./analysisService');
     
     try {
-      const report = await analyzeInfluencer(handle);
+      const report = await analyzeInfluencer(handle, platform);
       saveReport(report);
       return report;
     } catch (innerError) {

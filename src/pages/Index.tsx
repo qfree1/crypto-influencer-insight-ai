@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { saveAnalysisToHistory } from '@/services/storageService';
+
 const Index = () => {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECT_WALLET);
   const [web3State, setWeb3State] = useState<Web3State>(initialWeb3State);
@@ -22,6 +23,7 @@ const Index = () => {
   const [isAutoConnecting, setIsAutoConnecting] = useState(true);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
   useEffect(() => {
     const reconnect = async () => {
       try {
@@ -38,21 +40,25 @@ const Index = () => {
     };
     reconnect();
   }, []);
+
   const handleWalletVerification = () => {
     setAppState(AppState.VERIFY_TOKENS);
   };
+
   const handleTokenVerification = () => {
     setAppState(AppState.INPUT_HANDLE);
   };
-  const handleInfluencerSubmit = async (handle: string) => {
+
+  const handleInfluencerSubmit = async (handle: string, platform: string = 'x') => {
     setIsLoading(true);
     setAppState(AppState.LOADING_REPORT);
     try {
-      const reportData = await generateReport(handle);
+      const reportData = await generateReport(handle, platform);
       setReport(reportData);
       if (reportData && web3State.address) {
         saveAnalysisToHistory({
           influencer: handle,
+          platform: platform,
           date: new Date().toISOString(),
           reportId: reportData.id || Date.now().toString()
         });
@@ -65,19 +71,23 @@ const Index = () => {
       setIsLoading(false);
     }
   };
+
   const startNewAnalysis = () => {
     setAppState(AppState.INPUT_HANDLE);
     setReport(null);
   };
+
   const handleSelectHistoryReport = (historicalReport: RiskReport) => {
     setReport(historicalReport);
     setAppState(AppState.SHOW_REPORT);
   };
+
   useEffect(() => {
     if (web3State.isConnected && appState === AppState.CONNECT_WALLET) {
       handleWalletVerification();
     }
   }, [web3State.isConnected, appState]);
+
   if (isAutoConnecting) {
     return <div className="min-h-screen flex flex-col bg-background">
         <Web3DBackgroundLogo />
@@ -93,6 +103,7 @@ const Index = () => {
         </div>
       </div>;
   }
+
   return <div className="min-h-screen flex flex-col bg-background">
       <Web3DBackgroundLogo />
       
@@ -129,4 +140,5 @@ const Index = () => {
       </div>
     </div>;
 };
+
 export default Index;

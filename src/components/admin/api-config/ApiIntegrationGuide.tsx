@@ -14,14 +14,18 @@ const ApiIntegrationGuide = () => {
         To use real data for influencer analysis, you need to connect to external APIs that provide:
       </p>
       <ul className="list-disc pl-5 mt-2 text-sm text-muted-foreground space-y-1">
-        <li>Social media metrics (followers, engagement rates)</li>
+        <li>Social media metrics (followers, engagement rates) from Twitter/X, Instagram, and Telegram</li>
         <li>Blockchain transaction data (wallet addresses, token movements)</li>
         <li>Risk assessment algorithms</li>
       </ul>
       <p className="text-sm text-muted-foreground mt-2">
-        Recommended API providers: Moralis, Alchemy, Etherscan, Twitter API, or specialized crypto influencer
-        analysis platforms.
+        Recommended API providers: 
       </p>
+      <ul className="list-disc pl-5 mt-1 text-sm text-muted-foreground space-y-1">
+        <li>Blockchain: Moralis, Alchemy, Etherscan</li>
+        <li>Social Media: Twitter/X API, Instagram Graph API, Telegram Bot API</li>
+        <li>AI Analysis: OpenAI, specialized crypto influencer analysis platforms</li>
+      </ul>
     </div>
   );
 };

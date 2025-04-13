@@ -22,6 +22,17 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [isSaved, setIsSaved] = useState(false);
   
+  // Get platform display name
+  const getPlatformName = (platform?: string): string => {
+    if (!platform) return 'Twitter/X';
+    switch(platform) {
+      case 'x': return 'Twitter/X';
+      case 'instagram': return 'Instagram';
+      case 'telegram': return 'Telegram';
+      default: return 'Social Media';
+    }
+  };
+  
   // Save report to history
   const handleSaveReport = () => {
     saveReportToHistory(report);
@@ -41,6 +52,7 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
         timestamp={report.timestamp}
         onSaveReport={handleSaveReport}
         isSaved={isSaved}
+        platform={report.platform}
       />
       
       {/* Main Content */}
@@ -66,6 +78,7 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
             summary={report.summary}
             detailedAnalysis={report.detailedAnalysis}
             twitterMetrics={report.twitterMetrics}
+            platform={report.platform}
           />
           
           <EnhancedShareButtons report={report} />
@@ -73,7 +86,7 @@ const AnalysisReport = ({ report, onNewAnalysis }: AnalysisReportProps) => {
         
         {/* Metrics Tab */}
         <TabsContent value="metrics" className="space-y-4">
-          <MetricsTab twitterMetrics={report.twitterMetrics} />
+          <MetricsTab twitterMetrics={report.twitterMetrics} platform={report.platform} />
         </TabsContent>
         
         {/* Blockchain Tab */}

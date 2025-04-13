@@ -1,51 +1,46 @@
 
-import { BlockchainData, TwitterMetrics } from '@/types';
+import { TwitterMetrics } from '@/types';
 
 /**
- * Generate synthetic blockchain data when real API fails
+ * Generate synthetic Twitter data for demonstration/development
  */
-export const generateSyntheticBlockchainData = (address: string): BlockchainData => {
-  const dumpingScores = ['low', 'medium', 'high'] as const;
-  const rugPullCount = Math.floor(Math.random() * 10);
+export const generateSyntheticTwitterData = (handle: string, platform: string = 'x'): TwitterMetrics => {
+  // Create deterministic but seemingly random data based on the handle string
+  const handleSum = Array.from(handle).reduce((sum, char) => sum + char.charCodeAt(0), 0);
   
-  // Higher rug pull count correlates with higher dumping behavior
-  let dumpingIndex = 0;
-  if (rugPullCount > 6) dumpingIndex = 2;
-  else if (rugPullCount > 3) dumpingIndex = 1;
+  // Use the handle sum to seed our "random" calculations
+  const followerBase = platform === 'instagram' ? 50000 : platform === 'telegram' ? 15000 : 25000;
+  const followers = followerBase + (handleSum % 100000);
   
-  return {
-    address: address || `0x${Array(40).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`,
-    rugPullCount,
-    dumpingBehavior: dumpingScores[dumpingIndex],
-    mevActivity: rugPullCount > 5, // Correlation between rug pulls and MEV activity
-  };
-};
-
-/**
- * Generate synthetic Twitter data
- */
-export const generateSyntheticTwitterData = (handle: string): TwitterMetrics => {
-  // Generate more realistic data based on the handle
-  const handleHash = handle.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  // Engagement rates are often dependent on follower count (inverse relationship in many cases)
+  // Small accounts often have higher engagement rates
+  const baseEngagement = platform === 'instagram' ? 3.5 : platform === 'telegram' ? 5.0 : 2.0;
+  const followerFactor = Math.min(0.5, 5000 / followers);
+  const engagementRate = baseEngagement + (followerFactor * (handleSum % 10)) / 10;
   
-  // Use the hash to create pseudo-random but consistent values for a handle
-  const followers = 5000 + (handleHash % 10) * 20000;
-  const realFollowerPercentage = 40 + (handleHash % 6) * 10;
-  const engagementRate = 0.5 + (handleHash % 10) / 10;
+  // Lower quality/suspicious accounts often have lower real follower percentages
+  const realFollowerBase = platform === 'instagram' ? 65 : platform === 'telegram' ? 70 : 75;
+  const realFollowerPercentage = Math.min(98, Math.max(25, realFollowerBase + (handleSum % 30)));
   
-  // Generate promoted tokens with realistic distribution
-  // More risky accounts have more rugpulls
-  const tokenCount = 10;
-  const rugPullPercentage = Math.min(90, Math.max(10, (handleHash % 100)));
-  const tokens = Array(tokenCount).fill(null).map((_, index) => {
+  // Generate token data
+  const tokenCount = 8 + (handleSum % 5); // 8-12 tokens
+  const rugPullLikelihood = platform === 'instagram' ? 0.4 : platform === 'telegram' ? 0.5 : 0.3;
+  const rugPullPercentage = Math.max(10, Math.min(90, (handleSum % 100) * rugPullLikelihood));
+  
+  const promotedTokens = Array(tokenCount).fill(null).map((_, index) => {
     const isRugPull = (index / tokenCount * 100) < rugPullPercentage;
     
+    const prefix = handle.substring(0, 3).toUpperCase();
+    const nameOptions = platform === 'instagram' ? ['GRAM', 'INSTA', 'PHOTO'] : 
+                         platform === 'telegram' ? ['TELE', 'GRAM', 'MSG'] : ['TWEET', 'BIRD', 'POST'];
+    const nameSuffix = nameOptions[index % nameOptions.length];
+    
     return {
-      name: `TOKEN${Math.floor(Math.random() * 100)}`,
+      name: `${prefix}_${nameSuffix}${Math.floor((handleSum + index) % 100)}`,
       status: isRugPull ? 'rugpull' as const : Math.random() > 0.7 ? 'declined' as const : 'active' as const,
       performancePercentage: isRugPull 
-        ? -1 * (Math.floor(Math.random() * 50) + 50)
-        : Math.floor(Math.random() * 200) - 100,
+        ? -1 * (Math.floor((handleSum + index) % 50) + 50)
+        : Math.floor((handleSum + index) % 200) - 100,
     };
   });
   
@@ -53,6 +48,7 @@ export const generateSyntheticTwitterData = (handle: string): TwitterMetrics => 
     followers,
     realFollowerPercentage,
     engagementRate,
-    promotedTokens: tokens
+    promotedTokens,
+    platform
   };
 };

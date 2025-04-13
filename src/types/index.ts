@@ -14,6 +14,7 @@ export interface InfluencerData {
   handle: string;
   name?: string;
   profileImage?: string;
+  platform?: string;
 }
 
 export interface TwitterMetrics {
@@ -21,6 +22,7 @@ export interface TwitterMetrics {
   realFollowerPercentage: number;
   engagementRate: number;
   promotedTokens: PromotedToken[];
+  platform?: string;
 }
 
 export interface PromotedToken {
@@ -37,7 +39,7 @@ export interface BlockchainData {
 }
 
 export interface RiskReport {
-  id?: string; // Adding optional id property
+  id?: string;
   influencerData: InfluencerData;
   twitterMetrics: TwitterMetrics;
   blockchainData: BlockchainData;
@@ -45,6 +47,7 @@ export interface RiskReport {
   summary: string;
   detailedAnalysis: string;
   timestamp: number;
+  platform?: string;
 }
 
 // UI States
