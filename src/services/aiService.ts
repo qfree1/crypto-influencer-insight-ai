@@ -141,11 +141,16 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
     const openAiConfig = getOpenAiConfig();
     
     if (!openAiConfig.apiKey) {
-      console.warn('OpenAI API key not configured');
+      console.error('OpenAI API key not configured. Please add a valid API key in the settings.');
+      toast({
+        title: "OpenAI API Key Missing",
+        description: "Please configure your OpenAI API key in the admin settings",
+        variant: "destructive",
+      });
       return '';
     }
     
-    console.log('Analyzing with OpenAI...');
+    console.log('Analyzing with OpenAI using model:', openAiConfig.model || 'gpt-4o-mini');
     
     // Make request to OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -157,13 +162,20 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
       body: JSON.stringify({
         model: openAiConfig.model || 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 500
+        max_tokens: 800,
+        temperature: 0.3
       })
     });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('OpenAI API error:', errorData);
+      
+      toast({
+        title: "OpenAI API Error",
+        description: errorData.error?.message || "Failed to get response from OpenAI",
+        variant: "destructive",
+      });
       
       // Fallback to generic analysis if OpenAI fails
       if (prompt.includes('Analyze this crypto influencer')) {
@@ -186,9 +198,15 @@ export const analyzeWithOpenAI = async (prompt: string): Promise<string> => {
     }
     
     const data = await response.json();
+    console.log('OpenAI response received:', data.choices[0]?.message?.content.substring(0, 100) + '...');
     return data.choices[0]?.message?.content || '';
   } catch (error) {
     console.error('Error analyzing with OpenAI:', error);
+    toast({
+      title: "Analysis Error",
+      description: "Error connecting to OpenAI API. Using fallback analysis.",
+      variant: "destructive",
+    });
     return '';
   }
 };
