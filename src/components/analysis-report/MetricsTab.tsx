@@ -2,17 +2,37 @@
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { TwitterMetrics } from '@/types';
+import { Badge } from '@/components/ui/badge';
 
 interface MetricsTabProps {
   twitterMetrics: TwitterMetrics;
+  platform?: string;
 }
 
-const MetricsTab = ({ twitterMetrics }: MetricsTabProps) => {
+const MetricsTab = ({ twitterMetrics, platform }: MetricsTabProps) => {
+  // Get platform display name
+  const getPlatformName = (platform?: string): string => {
+    if (!platform) return 'Twitter/X';
+    switch(platform) {
+      case 'x': return 'Twitter/X';
+      case 'instagram': return 'Instagram';
+      case 'telegram': return 'Telegram';
+      default: return 'Social Media';
+    }
+  };
+
   return (
     <Card className="crypto-card">
       <div className="p-6 space-y-6">
         <div className="space-y-2">
-          <h3 className="text-xl font-semibold">Social Media Metrics</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold">Social Media Metrics</h3>
+            {platform && (
+              <Badge variant="outline" className="bg-secondary/10 text-xs">
+                {getPlatformName(platform)}
+              </Badge>
+            )}
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">

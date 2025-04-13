@@ -12,6 +12,7 @@ interface ReportHeaderProps {
   timestamp: number;
   onSaveReport: () => void;
   isSaved: boolean;
+  platform?: string;
 }
 
 const ReportHeader = ({ 
@@ -19,7 +20,8 @@ const ReportHeader = ({
   riskScore, 
   timestamp, 
   onSaveReport, 
-  isSaved 
+  isSaved,
+  platform
 }: ReportHeaderProps) => {
   
   // Format date
@@ -29,6 +31,17 @@ const ReportHeader = ({
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  // Get platform display name
+  const getPlatformName = (platform?: string): string => {
+    if (!platform) return 'Twitter/X';
+    switch(platform) {
+      case 'x': return 'Twitter/X';
+      case 'instagram': return 'Instagram';
+      case 'telegram': return 'Telegram';
+      default: return 'Social Media';
+    }
   };
 
   return (
@@ -51,6 +64,11 @@ const ReportHeader = ({
             <div className="text-sm text-muted-foreground">
               Analysis generated on {formatDate(timestamp)}
             </div>
+            {platform && (
+              <div className="text-sm text-muted-foreground">
+                Platform: {getPlatformName(platform)}
+              </div>
+            )}
             
             <div className="flex items-center space-x-2 pt-1">
               <Button 

@@ -48,6 +48,7 @@ export interface SavedAnalysis {
   influencer: string;
   date: string;
   reportId: string;
+  platform?: string;
 }
 
 // Get saved analysis history

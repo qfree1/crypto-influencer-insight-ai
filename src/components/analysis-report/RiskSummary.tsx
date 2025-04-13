@@ -9,13 +9,25 @@ interface RiskSummaryProps {
   summary: string;
   detailedAnalysis: string;
   twitterMetrics: RiskReport['twitterMetrics'];
+  platform?: string;
 }
 
-const RiskSummary = ({ summary, detailedAnalysis, twitterMetrics }: RiskSummaryProps) => {
+const RiskSummary = ({ summary, detailedAnalysis, twitterMetrics, platform }: RiskSummaryProps) => {
   // Calculate statistics
   const rugPullCount = twitterMetrics.promotedTokens.filter(t => t.status === 'rugpull').length;
   const activeCount = twitterMetrics.promotedTokens.filter(t => t.status === 'active').length;
   const isAiGenerated = summary.length > 100; // Heuristic to check if it's real OpenAI data vs fallback
+
+  // Get platform display name
+  const getPlatformName = (platform?: string): string => {
+    if (!platform) return 'Twitter/X';
+    switch(platform) {
+      case 'x': return 'Twitter/X';
+      case 'instagram': return 'Instagram';
+      case 'telegram': return 'Telegram';
+      default: return 'Social Media';
+    }
+  };
 
   return (
     <Card className="crypto-card">
@@ -23,15 +35,22 @@ const RiskSummary = ({ summary, detailedAnalysis, twitterMetrics }: RiskSummaryP
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">Risk Assessment</h3>
-            {isAiGenerated ? (
-              <Badge variant="outline" className="bg-primary/10 text-xs flex items-center gap-1">
-                <Shield className="w-3 h-3" /> AI Analysis
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="bg-muted/50 text-xs flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" /> Basic Analysis
-              </Badge>
-            )}
+            <div className="flex gap-2">
+              {platform && (
+                <Badge variant="outline" className="bg-secondary/10 text-xs">
+                  {getPlatformName(platform)}
+                </Badge>
+              )}
+              {isAiGenerated ? (
+                <Badge variant="outline" className="bg-primary/10 text-xs flex items-center gap-1">
+                  <Shield className="w-3 h-3" /> AI Analysis
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="bg-muted/50 text-xs flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> Basic Analysis
+                </Badge>
+              )}
+            </div>
           </div>
           <p className="text-lg leading-relaxed">{summary}</p>
         </div>

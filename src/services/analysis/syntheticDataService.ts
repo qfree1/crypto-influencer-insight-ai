@@ -1,5 +1,5 @@
 
-import { TwitterMetrics } from '@/types';
+import { TwitterMetrics, BlockchainData } from '@/types';
 
 /**
  * Generate synthetic Twitter data for demonstration/development
@@ -50,5 +50,38 @@ export const generateSyntheticTwitterData = (handle: string, platform: string = 
     engagementRate,
     promotedTokens,
     platform
+  };
+};
+
+/**
+ * Generate synthetic blockchain data for demonstration/development
+ */
+export const generateSyntheticBlockchainData = (address: string): BlockchainData => {
+  // Create deterministic but seemingly random data based on the address
+  const addressSum = Array.from(address.replace('0x', '')).reduce(
+    (sum, char) => sum + parseInt(char, 16) || sum + char.charCodeAt(0), 0
+  );
+  
+  // Use the address sum to seed our "random" calculations
+  const rugPullCount = Math.min(5, (addressSum % 6));
+  
+  // Determine dumping behavior based on address patterns
+  let dumpingBehavior: 'high' | 'medium' | 'low';
+  if (rugPullCount > 3) {
+    dumpingBehavior = 'high';
+  } else if (rugPullCount > 1) {
+    dumpingBehavior = 'medium';
+  } else {
+    dumpingBehavior = 'low';
+  }
+  
+  // MEV activity more likely with higher rugPullCount
+  const mevActivity = rugPullCount > 2;
+  
+  return {
+    address,
+    rugPullCount,
+    dumpingBehavior,
+    mevActivity,
   };
 };
