@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import AdminLogin from '@/components/admin/AdminLogin';
-import ApiConfigPanel from '@/components/admin/ApiConfigPanel';
+import ApiConfigPanel from '@/components/admin/api-config';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
